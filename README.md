@@ -16,6 +16,11 @@ Install dependencies
   npm install
 ```
 
+Database schema
+
+<img width="2960" height="1456" alt="image" src="https://github.com/user-attachments/assets/96cad476-9c21-4c83-8ade-4a239f7e88d7" />
+
+
 Create local database
 
 ```bash
