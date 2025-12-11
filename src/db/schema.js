@@ -3,8 +3,8 @@ import { randomUUID } from 'crypto'
 import { timestamp } from "drizzle-orm/gel-core";
 
 export const tAppRole = sqliteTable("T_APP_ROLE", {
-    aproId: integer("APRO_ID").primaryKey(),
-    aproLabel: integer("APRO_LABEL").notNull(),
+    aproId: text("APRO_ID").primaryKey(),
+    aproLabel: text("APRO_LABEL").notNull(),
 });
 
 export const tUser = sqliteTable("T_USER", {
@@ -14,7 +14,7 @@ export const tUser = sqliteTable("T_USER", {
     userMail: text("USER_MAIL").notNull(),
     userPass: text("USER_PASS").notNull(),
     userStatus: text("USER_STATUS").notNull(),
-    aproId: integer("APRO_ID").notNull().references(() => tAppRole.aproId),
+    aproId: text("APRO_ID").notNull().references(() => tAppRole.aproId),
 });
 
 export const tCollection = sqliteTable("T_COLLECTION", {
@@ -22,7 +22,7 @@ export const tCollection = sqliteTable("T_COLLECTION", {
     collTitle: text("COLL_TITLE").notNull(),
     collDesc: text("COLL_DESC").notNull(),
     collVisibility: text("COLL_VISIBILITY").notNull(),
-    userId: integer("USER_ID").notNull().references(() => tUser.userId),
+    userId: text("USER_ID").notNull().references(() => tUser.userId),
 });
 
 export const tFlashCard = sqliteTable("T_FLASH_CARD", {
@@ -31,7 +31,7 @@ export const tFlashCard = sqliteTable("T_FLASH_CARD", {
     flcaVerso: text("FLCA_VERSO").notNull(),
     flcaUrlRecto: text("FLCA_URL_RECTO").notNull(),
     flcaUrlVerso: text("FLCA_URL_VERSO").notNull(),
-    collId: integer("COLL_ID").notNull().references(() => tCollection.collId),
+    collId: text("COLL_ID").notNull().references(() => tCollection.collId),
 });
 
 export const tLevel = sqliteTable("T_LEVEL", {
