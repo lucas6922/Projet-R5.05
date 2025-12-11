@@ -11,6 +11,7 @@
     "db:push": "drizzle-kit push",
     "db:check":  "drizzle-kit check"
   },
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lucas6922/Projet-R5.05.git"
