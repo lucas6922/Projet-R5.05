@@ -1,4 +1,6 @@
 import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core"
+import { randomUUID } from 'crypto'
+import { timestamp } from "drizzle-orm/gel-core";
 
 export const tAppRole = sqliteTable("T_APP_ROLE", {
     aproId: integer("APRO_ID").primaryKey(),
@@ -6,7 +8,7 @@ export const tAppRole = sqliteTable("T_APP_ROLE", {
 });
 
 export const tUser = sqliteTable("T_USER", {
-    userId: integer("USER_ID").primaryKey(),
+    userId: text("USER_ID").primaryKey().$defaultFn(() => randomUUID()),
     userName: text("USER_NAME").notNull(),
     userFirstname: text("USER_FIRSTNAME").notNull(),
     userMail: text("USER_MAIL").notNull(),
@@ -16,7 +18,7 @@ export const tUser = sqliteTable("T_USER", {
 });
 
 export const tCollection = sqliteTable("T_COLLECTION", {
-    collId: integer("COLL_ID").primaryKey(),
+    collId: text("COLL_ID").primaryKey().$defaultFn(() => randomUUID()),
     collTitle: text("COLL_TITLE").notNull(),
     collDesc: text("COLL_DESC").notNull(),
     collVisibility: text("COLL_VISIBILITY").notNull(),
@@ -24,7 +26,7 @@ export const tCollection = sqliteTable("T_COLLECTION", {
 });
 
 export const tFlashCard = sqliteTable("T_FLASH_CARD", {
-    flcaId: integer("FLCA_ID").primaryKey(),
+    flcaId: text("FLCA_ID").primaryKey().$defaultFn(() => randomUUID()),
     flcaRecto: text("FLCA_RECTO").notNull(),
     flcaVerso: text("FLCA_VERSO").notNull(),
     flcaUrlRecto: text("FLCA_URL_RECTO").notNull(),
@@ -38,10 +40,10 @@ export const tLevel = sqliteTable("T_LEVEL", {
 });
 
 export const tRevision = sqliteTable("T_REVISION", {
-    reviId: integer("REVI_ID").primaryKey(),
-    reviLastDate: integer("REVI_LAST_DATE").notNull(),
-    userId: integer("USER_ID").notNull().references(() => tUser.userId),
-    flcaId: integer("FLCA_ID").notNull().references(() => tFlashCard.flcaId),
+    reviId: text("REVI_ID").primaryKey().$defaultFn(() => randomUUID()),
+    reviLastDate: integer("REVI_LAST_DATE", {mode: 'timestamp'}).notNull(),
+    userId: text("USER_ID").notNull().references(() => tUser.userId),
+    flcaId: text("FLCA_ID").notNull().references(() => tFlashCard.flcaId),
     leveId: integer("LEVE_ID").notNull().references(() => tLevel.leveId),
 });
 

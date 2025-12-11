@@ -9,8 +9,10 @@
     "db:studio": "drizzle-kit studio",
     "db:pull": "drizzle-kit pull",
     "db:push": "drizzle-kit push",
-    "db:check":  "drizzle-kit check"
+    "db:check":  "drizzle-kit check",
+    "db:seed": "node src/db/seed.js"
   },
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lucas6922/Projet-R5.05.git"
