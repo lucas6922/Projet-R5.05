@@ -1,6 +1,5 @@
 import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core"
 import { randomUUID } from 'crypto'
-import { timestamp } from "drizzle-orm/gel-core";
 
 export const tAppRole = sqliteTable("T_APP_ROLE", {
     aproId: text("APRO_ID").primaryKey(),
