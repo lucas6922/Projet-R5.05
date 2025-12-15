@@ -4,6 +4,8 @@ import { tUser } from '../db/schema.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken';
 import { eq } from 'drizzle-orm';
+import { sendVerificationEmail } from '../config/email.js';
+
 
 /**
  * 
@@ -13,9 +15,21 @@ import { eq } from 'drizzle-orm';
 export const registerUser = async (req, res) => {
     try{
         const {userMail, userName, userFirstname, userPass, aproId} = req.body;
-        console.log(userMail, userName, userFirstname, userPass, aproId)
+
+
+        const existingUser = await db
+        .select()
+        .from(tUser)
+        .where(eq(tUser.userMail, userMail));
+
+        if(existingUser.length > 0) {
+            return res.status(400).json({
+                error: 'Email already registred'
+            });
+        }
+
+
         const hashedPassword = await bcrypt.hash(userPass, 12);
-        console.log(hashedPassword)
     
         const [result] = await db
         .insert(tUser)
@@ -31,7 +45,15 @@ export const registerUser = async (req, res) => {
             id: tUser.userId
         });
 
-        console.log(result)
+        //token pour valide mail
+        const mailToken = jwt.sign(
+            {
+                userId: result.id
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: '24h' }
+        );
+        //token renvoyé utile pour auth
         const token = jwt.sign(
             {
                 userId: result.id
@@ -39,6 +61,10 @@ export const registerUser = async (req, res) => {
             process.env.JWT_SECRET,
             { expiresIn: '24h' }
         );
+
+
+        await sendVerificationEmail(userMail, mailToken);
+
 
         res.status(201).json({
             message: "user created",

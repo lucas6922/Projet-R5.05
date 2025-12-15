@@ -10,7 +10,7 @@ export const tUser = sqliteTable("T_USER", {
     userId: text("USER_ID").primaryKey().$defaultFn(() => randomUUID()),
     userName: text("USER_NAME").notNull(),
     userFirstname: text("USER_FIRSTNAME").notNull(),
-    userMail: text("USER_MAIL").notNull(),
+    userMail: text("USER_MAIL").notNull().unique(),
     userPass: text("USER_PASS").notNull(),
     userStatus: text("USER_STATUS").notNull(),
     aproId: text("APRO_ID").notNull().references(() => tAppRole.aproId),
