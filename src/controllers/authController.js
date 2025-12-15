@@ -151,16 +151,10 @@ export const loginUser = async (req, res) => {
 export const verifyEmail = async (req, res) => {
     try{
         const { token } = req.params;
-        console.log(token)
-        if(!token){
-            return res.status(400).json({
-                error: 'Verification oken is required'
-            });
-        }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        const user = await db
+        const [user] = await db
             .select()
             .from(tUser)
             .where(eq(tUser.userId, decoded.userId));

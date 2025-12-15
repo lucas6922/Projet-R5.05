@@ -13,3 +13,7 @@ export const loginSchema = z.object({
     userMail: z.email(),
     userPass: z.string().min(1).max(255),
 })
+
+export const verifyEmailTokenSchema = z.object({
+    token: z.string().min(1)
+})
