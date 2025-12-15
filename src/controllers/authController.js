@@ -6,7 +6,6 @@ import jwt from 'jsonwebtoken';
 import { eq } from 'drizzle-orm';
 import { sendVerificationEmail } from '../config/email.js';
 
-
 /**
  * 
  * @param {request} req 
@@ -106,7 +105,7 @@ export const loginUser = async (req, res) => {
                 error: 'Please verify your email before login'
             });
         }
-        
+
         const valid = await bcrypt.compare(userPass, user.userPass);
 
         if(!valid){
@@ -139,5 +138,58 @@ export const loginUser = async (req, res) => {
             detail: error.message
         })
     }
-    
+}
+
+/**
+ * 
+ */
+/**
+ * 
+ * @param {request} req 
+ * @param {response} res 
+ */
+export const verifyEmail = async (req, res) => {
+    try{
+        const { token } = req.params;
+        console.log(token)
+        if(!token){
+            return res.status(400).json({
+                error: 'Verification oken is required'
+            });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        const user = await db
+            .select()
+            .from(tUser)
+            .where(eq(tUser.userId, decoded.userId));
+
+        if(!user){
+            return res.status(400).json({
+                error: 'User not found'
+            });
+        }
+
+        if(user.status == 'VALIDATED'){
+            return res.status(200).json({
+                message: 'Email already verified'
+            });
+        }
+
+        await db
+            .update(tUser)
+            .set({userStatus: 'VALIDATED'})
+            .where(eq(tUser.userId, decoded.userId));
+
+        return res.status(200).json({
+            message: "Email verified successfully"
+        });
+    }catch(error){
+        console.log(error);
+        res.status(500).json({
+            error: 'Failed to verify email',
+            detail: error.message
+        });
+    }
 }

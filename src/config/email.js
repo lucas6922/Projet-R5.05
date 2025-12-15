@@ -18,8 +18,7 @@ export const sendVerificationEmail = async (email, token) => {
         name: "Projet R505",
     };
 
-    const verificationUrl = `http://localhost:3000/auth/verify-email?token=${token}`;
-
+    const verificationUrl = `http://localhost:3000/auth/verify-email/${token}`;
     transport
     .sendMail({
         from: sender,
