@@ -101,6 +101,12 @@ export const loginUser = async (req, res) => {
             });
         }
 
+        if(user.userStatus != 'VALIDATED'){
+            return res.status(403).json({
+                error: 'Please verify your email before login'
+            });
+        }
+        
         const valid = await bcrypt.compare(userPass, user.userPass);
 
         if(!valid){
