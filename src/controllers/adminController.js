@@ -1,5 +1,5 @@
 import { db } from '../db/database.js'
-import { tUser as tUser } from '../db/schema.js'
+import { tUser } from '../db/schema.js'
 import { eq, or, and } from 'drizzle-orm'
 
 /**
