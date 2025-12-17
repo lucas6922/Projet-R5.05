@@ -6,7 +6,7 @@ import { authenticateToken } from '../middleware/authenticateToken.js'
 
 const router = Router()
 
-//router.use(authenticateToken)
+router.use(authenticateToken)
 
 router.get('/:collId', validateParams(collectionIdSchema), getCollection);
 

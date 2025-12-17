@@ -1,6 +1,7 @@
 import express from "express";
 import collectionRoutes from "./router/collectionRouter.js"
 import authionRoutes from './router/authRouter.js'
+import cardRoutes from './router/cardRouter.js'
 import logger from './middleware/logger.js'
 
 const PORT = 3000;
@@ -14,6 +15,7 @@ app.use(logger)
 
 app.use('/collection', collectionRoutes)
 app.use('/auth', authionRoutes)
+app.use('/card', cardRoutes)
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`)
 })
