@@ -6,6 +6,9 @@ import { registerSchema, loginSchema, verifyEmailTokenSchema } from '../models/a
 const router = Router()
 
 router.post('/register', validateBody(registerSchema), registerUser);
+
 router.post('/login', validateBody(loginSchema), loginUser);
+
 router.get('/verify-email/:token', validateParams(verifyEmailTokenSchema), verifyEmail);
+
 export default router;
