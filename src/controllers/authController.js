@@ -12,6 +12,29 @@ import { sendVerificationEmail } from '../config/email.js';
  * @param {response} res 
  */
 export const registerUser = async (req, res) => {
+    /* 
+    #swagger.tags = ['Auth']
+    #swagger.security = []
+    #swagger.description = 'Register a new user with email, last name, first name and password. A verification email is sent.'
+    #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Registration information',
+      required: true,
+      schema: { $ref: '#/definitions/RegisterRequest' }
+    }
+    #swagger.responses[201] = {
+      description: 'User created successfully',
+      schema: { $ref: '#/definitions/RegisterResponse' }
+    }
+    #swagger.responses[400] = {
+      description: 'Email already registered',
+      schema: { $ref: '#/definitions/Error' }
+    }
+    #swagger.responses[500] = {
+      description: 'Server error',
+      schema: { $ref: '#/definitions/Error' }
+    }
+  */
     try{
         const {userMail, userName, userFirstname, userPass, aproId} = req.body;
 
@@ -85,6 +108,33 @@ export const registerUser = async (req, res) => {
  * @param {response} res 
  */
 export const loginUser = async (req, res) => {
+    /* 
+    #swagger.tags = ['Auth']
+    #swagger.security = []
+    #swagger.description = 'Authentication by email and password, returns a JWT. The user must have verified their email.'
+    #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Login credentials',
+      required: true,
+      schema: { $ref: '#/definitions/LoginRequest' }
+    }
+    #swagger.responses[200] = {
+      description: 'Successfully logged in',
+      schema: { $ref: '#/definitions/AuthResponse' }
+    }
+    #swagger.responses[403] = {
+      description: 'Email not verified',
+      schema: { $ref: '#/definitions/Error' }
+    }
+    #swagger.responses[404] = {
+      description: 'Invalid email or password',
+      schema: { $ref: '#/definitions/Error' }
+    }
+    #swagger.responses[500] = {
+      description: 'Server error',
+      schema: { $ref: '#/definitions/Error' }
+    }
+  */
     try{
         const {userMail, userPass} = req.body;
 
@@ -140,15 +190,36 @@ export const loginUser = async (req, res) => {
     }
 }
 
-/**
- * 
- */
+
 /**
  * 
  * @param {request} req 
  * @param {response} res 
  */
 export const verifyEmail = async (req, res) => {
+    /* 
+    #swagger.tags = ['Auth']
+    #swagger.security = []
+    #swagger.description = 'User email verification via the token received by email'
+    #swagger.parameters['token'] = {
+      in: 'path',
+      description: 'JWT verification token received by email',
+      required: true,
+      type: 'string'
+    }
+    #swagger.responses[200] = {
+      description: 'Email verified successfully or already verified',
+      schema: { $ref: '#/definitions/VerifyEmailResponse' }
+    }
+    #swagger.responses[400] = {
+      description: 'User not found',
+      schema: { $ref: '#/definitions/Error' }
+    }
+    #swagger.responses[500] = {
+      description: 'Verification error (invalid or expired token)',
+      schema: { $ref: '#/definitions/Error' }
+    }
+  */
     try{
         const { token } = req.params;
 
