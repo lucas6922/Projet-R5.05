@@ -29,13 +29,22 @@ export const getMyCollections = async (req, res) =>{
     }
     */
     try{
-        const result = await db
+      const result = await db
         .select()
         .from(tCollection)
-        .where(eq(tCollection.userId, req.user.userId))
+        .where(eq(tCollection.userId, req.user))
         .orderBy('collTitle', 'asc')
 
-        res.status(200).json(result)
+      if(result.length == 0){
+        res.status(404).json({
+            error: "No collections found for this user"
+        });
+      }
+      
+      res.status(200).json({
+        message: "Collections fetched successfully",
+        collections: result
+      })
     } catch ( error ){
         res.status(500).send({
             error: 'Failed to fetch collections',
@@ -88,14 +97,17 @@ export const getCollection = async (req, res) =>{
         const result = await db
         .select()
         .from(tCollection)
-        .where(and(or(eq(tCollection.collVisibility, 'public'),eq(tCollection.userId, req.user)),eq(tCollection.collId, req.params.collId)))
+        .where(and(or(eq(tCollection.collVisibility,'PUBLIC'),eq(tCollection.userId, req.user)),eq(tCollection.collId, req.params.collId)))
 
         if(result.length == 0){
             res.status(404).json({
                 error: "Collection not found"
             });
         }
-        res.status(200).json(result)
+        res.status(200).json({
+            message: "Collection fetched successfully",
+            collection: result
+        })
     } catch ( error ){
         res.status(500).send({
             error: 'Failed to fetch collection',
@@ -216,7 +228,12 @@ export const editCollection = async (req, res) => {
     }
     */
     try{
-        console.log(req.body)
+        const body = req.body
+        const data = {}
+        if (body.collTitle == undefined) data.collTitle = body.collTitle;
+        if (body.collDesc == undefined) data.collDesc = body.collDesc;
+        if (body.collVisibility == undefined) data.collVisibility = body.collVisibility;
+
         const result = await db
         .update(tCollection)
         .set(req.body)

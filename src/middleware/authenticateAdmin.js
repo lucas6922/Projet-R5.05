@@ -1,6 +1,6 @@
 import { request, response } from 'express'
 import { db } from '../db/database.js'
-import { tUser } from '../db/schema.js'
+import { tAppRole, tUser } from '../db/schema.js'
 import { eq, or, and } from 'drizzle-orm'
 import jwt from 'jsonwebtoken'
 
@@ -10,14 +10,20 @@ import jwt from 'jsonwebtoken'
  * @param {response} res 
  * @param {Function} next 
  */
-export const authenticateToken = async (req, res, next) => {
+export const authenticateAdmin = async (req, res, next) => {
     try{
         const result = await db
-        .select(tUser.userId)
+        .select({ userId: tUser.userId })
         .from(tUser)
-        .where(and(eq(tUser.userId, req.user.userId), eq(tUser.userStatus, 'ADMIN')))
-        .orderBy('userId', 'asc')
-
+        .innerJoin(tAppRole, eq(tUser.aproId, tAppRole.aproId))
+        .where(
+            and(
+                eq(tUser.userId, req.user.userId),
+                eq(tAppRole.aproLabel, 'ADMIN'),
+            )
+        )
+        .orderBy(tUser.userId);
+        
         if(result.length > 0) {
             return res.status(400).json({
                 error: 'User is not an admin'

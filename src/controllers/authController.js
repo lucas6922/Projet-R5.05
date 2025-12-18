@@ -137,7 +137,6 @@ export const loginUser = async (req, res) => {
   */
     try{
         const {userMail, userPass} = req.body;
-
         const [user] = await db
         .select()
         .from(tUser)
