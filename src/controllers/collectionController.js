@@ -88,7 +88,7 @@ export const getCollection = async (req, res) =>{
         const result = await db
         .select()
         .from(tCollection)
-        .where(and(or(eq(tCollection.collVisibility, 'public'),eq(tCollection.userId, req.body.user.userId)),eq(tCollection.collId, req.params.collId)))
+        .where(and(or(eq(tCollection.collVisibility, 'public'),eq(tCollection.userId, req.user)),eq(tCollection.collId, req.params.collId)))
 
         if(result.length == 0){
             res.status(404).json({
@@ -144,9 +144,17 @@ export const createCollection = async (req, res) => {
     }
     */
     try{
+        console.log("req : ", req.user)
+        const data = {
+            collTitle: req.body.collTitle,
+            collDesc: req.body.collDesc,
+            collVisibility: req.body.collVisibility,
+            userId: req.user, 
+        };
+        console.log(req.body)
         const result = await db
         .insert(tCollection)
-        .values(req.body)
+        .values(data)
         .returning()
 
         res.status(201).json({
