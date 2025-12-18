@@ -2,10 +2,12 @@ import { db } from './database.js'
 import { tAppRole, tUser, tCollection, tFlashCard, tLevel, tRevision } from './schema.js'
 import { faker } from '@faker-js/faker'
 import bcrypt from 'bcrypt'
+import { eq, and } from 'drizzle-orm'
 
 async function seed(){
     console.log('Seeding database...');
 
+    await db.delete(tRevision);
     await db.delete(tFlashCard);
     await db.delete(tCollection);
     await db.delete(tUser);
@@ -17,6 +19,7 @@ async function seed(){
     await seedLevel();
     await seedCollection();
     await seedCard();
+    await seedRevision();
 
     console.log("Database has been seed");
 }
@@ -124,5 +127,76 @@ async function seedCard(){
 
     await db.insert(tFlashCard).values(flashcards);
 }
+
+async function seedRevision() {
+    const revisions = [];
+    
+    const users = await db.select().from(tUser);
+    const flashcards = await db.select().from(tFlashCard);
+    const levels = await db.select().from(tLevel);
+    
+    const totoUser = users.find(u => u.userMail === 'toto@example.com');
+    
+    const programmingColl = await db.select()
+        .from(tCollection)
+        .where(and(
+            eq(tCollection.userId, totoUser.userId),
+            eq(tCollection.collTitle, 'History')
+        ));
+    
+    if (programmingColl.length > 0) {
+        const programmingCards = flashcards.filter(c => c.collId === programmingColl[0].collId);
+        const halfCount = Math.floor(programmingCards.length / 2);
+        
+        console.log(`📚 Collection Programming de toto: ${programmingCards.length} cartes`);
+        console.log(`✅ ${halfCount} cartes à réviser (anciennes)`);
+        console.log(`❌ ${programmingCards.length - halfCount} cartes récentes (pas encore)`);
+        
+        for (let i = 0; i < halfCount; i++) {
+            revisions.push({
+                reviLastDate: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000), 
+                userId: totoUser.userId,
+                flcaId: programmingCards[i].flcaId,
+                leveId: 2 
+            });
+        }
+        
+        for (let i = halfCount; i < programmingCards.length; i++) {
+            revisions.push({
+                reviLastDate: new Date(), 
+                userId: totoUser.userId,
+                flcaId: programmingCards[i].flcaId,
+                leveId: 1 
+            });
+        }
+    }
+    for (const user of users) {
+        if (user.userId === totoUser?.userId) continue;
+        
+        const numRevisionsToCreate = faker.number.int({ 
+            min: Math.floor(flashcards.length * 0.3), 
+            max: Math.floor(flashcards.length * 0.7) 
+        });
+        
+        const selectedCards = faker.helpers.arrayElements(flashcards, numRevisionsToCreate);
+        
+        for (const card of selectedCards) {
+            const daysAgo = faker.number.int({ min: 0, max: 30 });
+            const level = faker.helpers.arrayElement(levels);
+            
+            revisions.push({
+                reviLastDate: new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000),
+                userId: user.userId,
+                flcaId: card.flcaId,
+                leveId: level.leveId
+            });
+        }
+    }
+    
+    await db.insert(tRevision).values(revisions);
+}
+
+
+
 
 seed();
