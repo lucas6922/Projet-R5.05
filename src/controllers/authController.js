@@ -95,7 +95,7 @@ export const loginUser = async (req, res) => {
 
 
         if(!user){
-            res.status(404).json({
+            return res.status(404).json({
                 message: "invalid email or password",
             });
         }
@@ -109,7 +109,7 @@ export const loginUser = async (req, res) => {
         const valid = await bcrypt.compare(userPass, user.userPass);
 
         if(!valid){
-            res.status(404).json({
+            return res.status(404).json({
                 message: "invalid email or password",
             });
         }
@@ -122,7 +122,7 @@ export const loginUser = async (req, res) => {
             { expiresIn: '24h' }
         );
 
-        res.status(200).json({
+        return res.status(200).json({
             message: "User logged in",
             userData: {
                 id: user.userId,

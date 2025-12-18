@@ -11,12 +11,23 @@ import { eq, or, and } from 'drizzle-orm'
 export const getCard = async (req, res) =>{
     try{
         const result = await db
-        .select()
+        .select({
+            flcaId: tFlashCard.flcaId,
+            flcaRecto: tFlashCard.flcaRecto,
+            flcaVerso: tFlashCard.flcaVerso,
+            flcaUrlRecto: tFlashCard.flcaUrlRecto,
+            flcaUrlVerso: tFlashCard.flcaUrlVerso,
+            collId: tFlashCard.collId
+        })
         .from(tFlashCard)
         .innerJoin(tCollection, eq(tCollection.collId, tFlashCard.collId))
-        .where(and(or(eq(tCollection.collVisibility, 'public'),eq(tCollection.userId, req.user)),eq(tFlashCard.flcaId, req.params.flcaId)))
-        console.log("result : ", result)
-        res.status(200).json(result.tFlashCard)
+        .where(and(or(eq(tCollection.collVisibility, 'public'),eq(tCollection.userId, req.user)),eq(tFlashCard.flcaId, req.params.flcaId)));
+        if(result.length === 0){
+            return res.status(404).json({
+                error: 'Card not found or access denied'
+            })
+        }
+        return res.status(200).json(result)
     } catch ( error ){
         res.status(500).send({
             error: 'Failed to fetch card',
