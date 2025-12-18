@@ -18,7 +18,7 @@ async function seed(){
     await seedCollection();
     await seedCard();
 
-    console.log("Database has been seed");
+    console.log("Database has been seeded.");
 }
 
 async function seedUser(){
