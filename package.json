@@ -11,7 +11,7 @@
     "db:push": "drizzle-kit push",
     "db:check": "drizzle-kit check",
     "db:seed": "node src/db/seed.js",
-    "swagger": "node src/sawgger.js"
+    "swagger": "node src/swagger.js"
   },
   "type": "module",
   "repository": {

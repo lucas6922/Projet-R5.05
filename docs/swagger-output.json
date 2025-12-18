@@ -19,93 +19,25 @@
     }
   },
   "paths": {
-    "/collection/{collId}": {
+    "/admin/": {
       "get": {
         "tags": [
-          "Collection"
+          "Administration"
         ],
-        "summary": "Get a collection",
-        "description": "Retrieves collection information. Accessible if it is public or if the user is the owner.",
-        "parameters": [
-          {
-            "name": "collId",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "Collection ID"
-          }
-        ],
+        "summary": "Get all users",
+        "description": "Returns a list of all users ordered by userId ascending.",
         "responses": {
           "200": {
-            "description": "Collection retrieved successfully",
-            "schema": {
-              "$ref": "#/definitions/Collection"
-            }
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "403": {
-            "description": "Access denied - private collection",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "404": {
-            "description": "Collection not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "500": {
-            "description": "Server error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      },
-      "put": {
-        "tags": [
-          "Collection"
-        ],
-        "summary": "Update a collection",
-        "description": "Updates the title, description or visibility of a collection. Only by the owner.",
-        "parameters": [
-          {
-            "name": "collId",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "ID of the collection to update"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "description": "New collection data",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/CollectionInput"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Collection updated successfully",
+            "description": "Users fetched successfully",
             "schema": {
               "type": "object",
               "properties": {
-                "message": {
+                "type": {
                   "type": "string",
-                  "example": "Collection edited"
+                  "example": "array"
                 },
-                "collection": {
-                  "$ref": "#/definitions/Collection"
+                "items": {
+                  "$ref": "#/components/schemas/User"
                 }
               },
               "xml": {
@@ -113,29 +45,42 @@
               }
             }
           },
-          "201": {
-            "description": "Created"
+          "500": {
+            "description": "Failed to fetch users"
+          }
+        }
+      }
+    },
+    "/admin/{userId}": {
+      "get": {
+        "tags": [
+          "Administration"
+        ],
+        "summary": "Get current user",
+        "description": "Returns the authenticated user based on the token.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User fetched successfully",
+            "schema": {
+              "$ref": "#/components/schemas/User"
+            }
           },
           "400": {
             "description": "Bad Request"
           },
-          "403": {
-            "description": "Access denied - you are not the owner",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "404": {
-            "description": "Collection not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+          "401": {
+            "description": "Unauthorized"
           },
           "500": {
-            "description": "Server error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "description": "Failed to fetch user"
           }
         },
         "security": [
@@ -146,141 +91,45 @@
       },
       "delete": {
         "tags": [
-          "Collection"
+          "Administration"
         ],
-        "summary": "Delete a collection",
-        "description": "Deletes a collection and all its associated flashcards. Only by the owner.",
+        "summary": "Delete current user",
+        "description": "Deletes the authenticated user from the database.",
         "parameters": [
           {
-            "name": "collId",
+            "name": "userId",
             "in": "path",
             "required": true,
-            "type": "integer",
-            "description": "ID of the collection to delete"
+            "type": "string"
           }
         ],
         "responses": {
-          "200": {
-            "description": "Collection deleted successfully",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "example": "Collection deleted"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
-          },
           "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "403": {
-            "description": "Access denied - you are not the owner",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "404": {
-            "description": "Collection not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "500": {
-            "description": "Server error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
-    "/collection/": {
-      "get": {
-        "tags": [
-          "Collection"
-        ],
-        "summary": "Get my collections",
-        "description": "Returns all collections belonging to the logged-in user, sorted by title",
-        "responses": {
-          "200": {
-            "description": "Collections list retrieved successfully",
+            "description": "User deleted successfully",
             "schema": {
               "type": "object",
               "properties": {
                 "type": {
                   "type": "string",
-                  "example": "array"
+                  "example": "object"
                 },
-                "items": {
-                  "$ref": "#/definitions/Collection"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
-          },
-          "403": {
-            "description": "Authentication token required",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "500": {
-            "description": "Server error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      },
-      "post": {
-        "tags": [
-          "Collection"
-        ],
-        "summary": "Create a collection",
-        "description": "Creates a new flashcard collection for the logged-in user",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "description": "Collection data to create",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/CollectionInput"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Collection created successfully",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "example": "Collection created"
-                },
-                "collection": {
-                  "$ref": "#/definitions/Collection"
+                "properties": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        },
+                        "example": {
+                          "type": "string",
+                          "example": "User 1 deleted"
+                        }
+                      }
+                    }
+                  }
                 }
               },
               "xml": {
@@ -289,22 +138,16 @@
             }
           },
           "400": {
-            "description": "Invalid data",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "description": "Bad Request"
           },
-          "403": {
-            "description": "Authentication token required",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "User not found"
           },
           "500": {
-            "description": "Server error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
+            "description": "Failed to delete user"
           }
         },
         "security": [
@@ -439,6 +282,301 @@
           }
         },
         "security": []
+      }
+    },
+    "/collection/{collId}": {
+      "get": {
+        "tags": [
+          "Collection"
+        ],
+        "summary": "Get a collection",
+        "description": "Retrieves collection information. Accessible if it is public or if the user is the owner.",
+        "parameters": [
+          {
+            "name": "collId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "Collection ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Collection retrieved successfully",
+            "schema": {
+              "$ref": "#/definitions/Collection"
+            }
+          },
+          "400": {
+            "description": "Invalid data",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "Authentication token required",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Collection not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Collection"
+        ],
+        "summary": "Update a collection",
+        "description": "Updates the title, description or visibility of a collection. Only by the owner.",
+        "parameters": [
+          {
+            "name": "collId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "ID of the collection to update"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "New collection data",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CollectionInput"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Collection updated successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Collection edited"
+                },
+                "collection": {
+                  "$ref": "#/definitions/Collection"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Invalid data",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Collection not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Collection"
+        ],
+        "summary": "Delete a collection",
+        "description": "Deletes a collection and all its associated flashcards. Only by the owner.",
+        "parameters": [
+          {
+            "name": "collId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "ID of the collection to delete"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Collection deleted successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Collection deleted"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Authentication token required",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Collection not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/collection/": {
+      "get": {
+        "tags": [
+          "Collection"
+        ],
+        "summary": "Get my collections",
+        "description": "Returns all collections belonging to the logged-in user, sorted by title",
+        "responses": {
+          "200": {
+            "description": "Collections list retrieved successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "array"
+                },
+                "items": {
+                  "$ref": "#/definitions/Collection"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "403": {
+            "description": "Authentication token required",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Collection"
+        ],
+        "summary": "Create a collection",
+        "description": "Creates a new flashcard collection for the logged-in user",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Collection data to create",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CollectionInput"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Collection created successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Collection created"
+                },
+                "collection": {
+                  "$ref": "#/definitions/Collection"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid data",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "403": {
+            "description": "Authentication token required",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     }
   },
