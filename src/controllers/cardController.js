@@ -81,3 +81,45 @@ export const createCard = async (req, res) => {
     }
     
 }
+
+
+
+/**
+ * 
+ * @param {request} req 
+ * @param {response} res 
+ */
+export const deleteCard = async (req, res) => {
+
+    const { flcaId } = req.params;
+    const userId = req.user
+
+    console.log(flcaId, userId)
+    
+    try{
+        const card = await db
+        .select()
+        .from(tFlashCard)
+        .fullJoin(tCollection)
+        .where(and(eq(tFlashCard.flcaId, flcaId), eq(tCollection.userId, userId)))
+
+        console.log("card", card)
+
+        if(card.length == 0){
+            return res.status(404).json({
+                message: "Card not found",
+            })
+        }
+
+        await db.delete(tFlashCard).where(eq(tFlashCard.flcaId, flcaId))
+
+        return res.status(200).json({
+            message : `Card ${flcaId} as been deleted`
+        })
+    }catch (error){
+        res.status(500).send({
+            error: `Failed to delete card ${flcaId}`,
+            detail: error.message
+        })
+    }
+}

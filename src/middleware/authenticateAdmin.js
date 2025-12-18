@@ -10,7 +10,7 @@ import jwt from 'jsonwebtoken'
  * @param {response} res 
  * @param {Function} next 
  */
-export const authenticateToken = async (req, res, next) => {
+export const authenticateAdmin = async (req, res, next) => {
     try{
         const result = await db
         .select(tUser.userId)

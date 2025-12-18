@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { getCard, createCard } from '../controllers/cardController.js';
+import { getCard, createCard, deleteCard } from '../controllers/cardController.js';
 import { validateBody, validateParams } from '../middleware/validation.js';
 import { createCardSchema, cardIdSchema } from '../models/card.js';
 import { authenticateToken } from '../middleware/authenticateToken.js'
@@ -11,5 +11,8 @@ router.use(authenticateToken)
 router.get('/:flcaId', validateParams(cardIdSchema), getCard);
 
 router.post('/', validateBody(createCardSchema), createCard);
+
+
+router.delete('/:flcaId', validateParams(cardIdSchema), deleteCard)
 
 export default router;
