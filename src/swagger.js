@@ -77,6 +77,34 @@ const doc = {
       cardFrontUrl: 'https://example.com/image.jpg',
       cardBackUrl: null
     },
+    FlashcardCreateRequest: {
+      flcaTitle: 'Card title',
+      flcaRecto: 'Front side content',
+      flcaVerso: 'Back side content',
+      flcaUrlRecto: 'https://example.com/front-image.jpg',
+      flcaUrlVerso: 'https://example.com/back-image.jpg',
+      collId: 1
+    },
+    FlashcardCreateResponse: {
+      message: 'Flashcard created successfully',
+      data: {
+        cardId: 42,
+        title: 'Card title',
+        collectionId: 1
+      }
+    },
+    FlashcardDetail: {
+      message: 'Flashcard retrieved successfully',
+      data: {
+        flcaId: 1,
+        flcaTitle: 'Card title',
+        flcaRecto: 'Front side content',
+        flcaVerso: 'Back side content',
+        flcaUrlRecto: 'https://example.com/front-image.jpg',
+        flcaUrlVerso: 'https://example.com/back-image.jpg',
+        collId: 1
+      }
+    },
     ReviewRequest: {
       revisionLevel: 3
     },
