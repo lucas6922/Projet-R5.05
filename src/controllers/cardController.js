@@ -9,6 +9,31 @@ import { eq, or, and } from 'drizzle-orm'
  * @param {response} res 
  */
 export const getCard = async (req, res) =>{
+    /* 
+    #swagger.tags = ['Flashcards']
+    #swagger.security = [{
+      "bearerAuth": []
+    }]
+    #swagger.description = 'Get a specific flashcard by ID. Accessible if the card belongs to a public collection or to the authenticated user.'
+    #swagger.parameters['flcaId'] = {
+      in: 'path',
+      description: 'ID of the flashcard to retrieve',
+      required: true,
+      type: 'integer'
+    }
+    #swagger.responses[200] = {
+      description: 'Flashcard retrieved successfully',
+      schema: { $ref: '#/definitions/FlashcardDetail' }
+    }
+    #swagger.responses[404] = {
+      description: 'Flashcard not found or not accessible',
+      schema: { $ref: '#/definitions/Error' }
+    }
+    #swagger.responses[500] = {
+      description: 'Server error',
+      schema: { $ref: '#/definitions/Error' }
+    }
+    */
     try{
         const result = await db
         .select({
@@ -21,13 +46,18 @@ export const getCard = async (req, res) =>{
         })
         .from(tFlashCard)
         .innerJoin(tCollection, eq(tCollection.collId, tFlashCard.collId))
-        .where(and(or(eq(tCollection.collVisibility, 'public'),eq(tCollection.userId, req.user)),eq(tFlashCard.flcaId, req.params.flcaId)));
+        .where(and(or(eq(tCollection.collVisibility, 'PUBLIC'),eq(tCollection.userId, req.user)),eq(tFlashCard.flcaId, req.params.flcaId)));
+        
         if(result.length === 0){
             return res.status(404).json({
-                error: 'Card not found or access denied'
+                error: 'Not found',
+                message: `Flashcard with id ${flcaId} not found or not accessible`
             })
         }
-        return res.status(200).json(result)
+        return res.status(200).json({
+            message: 'Flashcard retrieved successfully',
+            data: result
+        })
     } catch ( error ){
         res.status(500).send({
             error: 'Failed to fetch card',
@@ -42,6 +72,31 @@ export const getCard = async (req, res) =>{
  * @param {response} res 
  */
 export const createCard = async (req, res) => {
+    /* 
+    #swagger.tags = ['Flashcards']
+    #swagger.security = [{
+      "bearerAuth": []
+    }]
+    #swagger.description = 'Create a new flashcard in a collection. Only the collection owner can add cards.'
+    #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Flashcard data',
+      required: true,
+      schema: { $ref: '#/definitions/FlashcardCreateRequest' }
+    }
+    #swagger.responses[201] = {
+      description: 'Flashcard created successfully',
+      schema: { $ref: '#/definitions/FlashcardCreateResponse' }
+    }
+    #swagger.responses[403] = {
+      description: 'User does not have permission to add cards to this collection',
+      schema: { $ref: '#/definitions/Error' }
+    }
+    #swagger.responses[500] = {
+      description: 'Server error',
+      schema: { $ref: '#/definitions/Error' }
+    }
+    */
     try{
         const data = {
             flcaTitle: req.body.flcaTitle,
@@ -50,24 +105,23 @@ export const createCard = async (req, res) => {
             flcaUrlRecto: req.body.flcaUrlRecto,
             flcaUrlVerso: req.body.flcaUrlVerso,
             collId: req.body.collId,
-        }
+        };
 
         const collAuthorization = await db
         .select()
         .from(tCollection)
-        .where(and(eq(tCollection.collId, req.body.collId), eq(tCollection.userId, req.user)))
+        .where(and(eq(tCollection.collId, req.body.collId), eq(tCollection.userId, req.user)));
 
         if(collAuthorization.length === 0){
             return res.status(403).json({
                 error: "You do not have permission to add cards to this collection"
-            })
+            });
         }
 
-        console.log(req.body)
         const result = await db
         .insert(tFlashCard)
         .values(data)
-        .returning()
+        .returning();
 
         res.status(201).json({
             message: "Card created",
@@ -77,7 +131,7 @@ export const createCard = async (req, res) => {
         res.status(500).send({
             error: 'Failed to create card',
             detail: error.message
-        })
+        });
     }
     
 }
@@ -125,10 +179,6 @@ export const reviewCard = async (req, res) => {
     const userId = req.user
     const {revisionLevel} = req.body
 
-    console.log("level : ", revisionLevel);
-    console.log("card id : ", flcaId);
-    console.log("userId : ", userId);
-
     try{
 
         const flashCard = await db
@@ -165,11 +215,8 @@ export const reviewCard = async (req, res) => {
                 )
             )
             .returning()
-        
-        console.log("revision : ", revUpdate);
 
         if(!revUpdate){
-            console.log("no prev revision");
             const newRevision = await db.insert(tRevision)
             .values({
                 "reviLastDate": new Date(),
@@ -214,31 +261,62 @@ export const reviewCard = async (req, res) => {
  * @param {response} res 
  */
 export const deleteCard = async (req, res) => {
-
+    /* 
+    #swagger.tags = ['Flashcards']
+    #swagger.security = [{
+      "bearerAuth": []
+    }]
+    #swagger.description = 'Delete a flashcard. Only the collection owner can delete cards from their collections.'
+    #swagger.parameters['flcaId'] = {
+      in: 'path',
+      description: 'ID of the flashcard to delete',
+      required: true,
+      type: 'integer'
+    }
+    #swagger.responses[200] = {
+      description: 'Flashcard deleted successfully',
+      schema: {
+        message: 'Flashcard deleted successfully'
+      }
+    }
+    #swagger.responses[404] = {
+      description: 'Flashcard not found or not owned by user',
+      schema: { $ref: '#/definitions/Error' }
+    }
+    #swagger.responses[500] = {
+      description: 'Server error',
+      schema: { $ref: '#/definitions/Error' }
+    }
+    */
     const { flcaId } = req.params;
     const userId = req.user
-
-    console.log(flcaId, userId)
     
     try{
         const card = await db
         .select()
         .from(tFlashCard)
-        .innerJoin(tCollection)
-        .where(and(eq(tFlashCard.flcaId, flcaId), eq(tCollection.userId, userId)))
-
-        console.log("card", card)
+        .innerJoin(tCollection, eq(tCollection.collId, tFlashCard.collId))
+        .where(
+            and(
+                or(
+                    eq(tCollection.collVisibility, 'PUBLIC'),
+                    eq(tCollection.userId, req.user)
+                ),
+                eq(tFlashCard.flcaId, flcaId)
+            )
+        );
 
         if(card.length == 0){
             return res.status(404).json({
-                message: "Card not found",
+                error: "Not found",
+                message: `Flashcard with id ${flcaId} not found or you don't have permission to delete it`
             })
         }
 
         await db.delete(tFlashCard).where(eq(tFlashCard.flcaId, flcaId))
 
         return res.status(200).json({
-            message : `Card ${flcaId} as been deleted`
+            message : `Flashcard ${flcaId} as been deleted`
         })
     }catch (error){
         res.status(500).send({
