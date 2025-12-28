@@ -12,3 +12,7 @@ export const createCardSchema = z.object({
 export const cardIdSchema = z.object({
     flcaId: z.uuid(),
 })
+
+export const reviewCardLevelSchema = z.object({
+    revisionLevel: z.int().min(1).max(5)
+})

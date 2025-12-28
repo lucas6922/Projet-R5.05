@@ -1,7 +1,7 @@
 import { Router } from 'express'
-import { getCard, createCard, deleteCard } from '../controllers/cardController.js';
+import { getCard, createCard, deleteCard, reviewCard } from '../controllers/cardController.js';
 import { validateBody, validateParams } from '../middleware/validation.js';
-import { createCardSchema, cardIdSchema } from '../models/card.js';
+import { createCardSchema, cardIdSchema, reviewCardLevelSchema } from '../models/card.js';
 import { authenticateToken } from '../middleware/authenticateToken.js'
 
 const router = Router()
@@ -15,4 +15,5 @@ router.post('/', validateBody(createCardSchema), createCard);
 
 router.delete('/:flcaId', validateParams(cardIdSchema), deleteCard)
 
+router.post('/review/:flcaId', validateParams(cardIdSchema), validateBody(reviewCardLevelSchema), reviewCard)
 export default router;

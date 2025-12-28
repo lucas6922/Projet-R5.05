@@ -1,5 +1,5 @@
 import { db } from '../db/database.js'
-import { tFlashCard,tCollection } from '../db/schema.js'
+import { tFlashCard,tCollection, tRevision } from '../db/schema.js'
 import { eq, or, and } from 'drizzle-orm'
 
 
@@ -83,6 +83,130 @@ export const createCard = async (req, res) => {
 }
 
 
+//si la révision n'existe pas, la crée niveau 1
+export const reviewCard = async (req, res) => {
+    /* 
+    #swagger.tags = ['Flashcards']
+    #swagger.security = [{
+      "bearerAuth": []
+    }]
+    #swagger.description = 'Creates or updates a flashcard review for the authenticated user'
+    #swagger.parameters['flcaId'] = {
+      in: 'path',
+      description: 'ID of the flashcard to review',
+      required: true,
+      type: 'integer'
+    }
+    #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Review data',
+      required: true,
+      schema: { $ref: '#/definitions/ReviewRequest' }
+    }
+    #swagger.responses[200] = {
+      description: 'Revision updated successfully',
+      schema: { $ref: '#/definitions/ReviewResponse' }
+    }
+    #swagger.responses[201] = {
+      description: 'New revision created successfully',
+      schema: { $ref: '#/definitions/ReviewResponse' }
+    }
+    #swagger.responses[404] = {
+      description: 'Flashcard not found or not accessible',
+      schema: { $ref: '#/definitions/Error' }
+    }
+    #swagger.responses[500] = {
+      description: 'Server error',
+      schema: { $ref: '#/definitions/Error' }
+    }
+    */
+    
+    const { flcaId } = req.params;
+    const userId = req.user
+    const {revisionLevel} = req.body
+
+    console.log("level : ", revisionLevel);
+    console.log("card id : ", flcaId);
+    console.log("userId : ", userId);
+
+    try{
+
+        const flashCard = await db
+        .select()
+        .from(tFlashCard)
+        .innerJoin(tCollection, eq(tCollection.collId, tFlashCard.collId))
+        .where(
+            and(
+                or(
+                    eq(tCollection.collVisibility, 'PUBLIC'),
+                    eq(tCollection.userId, req.user)
+                ),
+                eq(tFlashCard.flcaId, flcaId)
+            )
+        );
+
+        if(flashCard.length === 0){
+            return res.status(404).json({
+                error: "Not found",
+                message: `Flashcard with id : ${flcaId} not found or not accessible`
+            });
+        }
+
+        const [revUpdate] = await db
+            .update(tRevision)
+            .set({
+                reviLastDate: new Date(),
+                leveId: revisionLevel
+            })
+            .where(
+                and(
+                    eq(tRevision.flcaId, flcaId),
+                    eq(tRevision.userId, userId)
+                )
+            )
+            .returning()
+        
+        console.log("revision : ", revUpdate);
+
+        if(!revUpdate){
+            console.log("no prev revision");
+            const newRevision = await db.insert(tRevision)
+            .values({
+                "reviLastDate": new Date(),
+                "userId": userId,
+                "flcaId": flcaId,
+                "leveId": 1
+            })
+            .returning();
+
+            return res.status(201).json({
+                message: "Revision created successfully",
+                data: {
+                    revisionId: newRevision.reviId,
+                    level: newRevision.leveId,
+                    lastReviewDate: newRevision.reviLastDate,
+                    isNew: true
+                }
+            })
+        }else{
+            return res.status(200).json({
+                message: `Revision : ${revUpdate.reviId} update successfully`,
+                data: {
+                    revisionId: revUpdate.reviId,
+                    level: revUpdate.leveId,
+                    lastReviewDate: revUpdate.reviLastDate,
+                    isNew: false
+                }
+            });
+        }
+    }catch (error){
+        res.status(500).send({
+            error: `Failed to review card ${flcaId}`,
+            detail: error.message
+        });
+    }
+}
+
 
 /**
  * 
@@ -100,7 +224,7 @@ export const deleteCard = async (req, res) => {
         const card = await db
         .select()
         .from(tFlashCard)
-        .fullJoin(tCollection)
+        .innerJoin(tCollection)
         .where(and(eq(tFlashCard.flcaId, flcaId), eq(tCollection.userId, userId)))
 
         console.log("card", card)
@@ -120,6 +244,6 @@ export const deleteCard = async (req, res) => {
         res.status(500).send({
             error: `Failed to delete card ${flcaId}`,
             detail: error.message
-        })
+        });
     }
 }
