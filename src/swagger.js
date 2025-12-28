@@ -77,6 +77,18 @@ const doc = {
       cardFrontUrl: 'https://example.com/image.jpg',
       cardBackUrl: null
     },
+    ReviewRequest: {
+      revisionLevel: 3
+    },
+    ReviewResponse: {
+      message: 'Revision updated successfully',
+      data: {
+        revisionId: 42,
+        level: 3,
+        lastReviewDate: '2025-12-28T17:01:00.000Z',
+        isNew: false
+      }
+    },
     Error: {
       error: 'Error description',
       detail: 'Additional details'
