@@ -1158,6 +1158,103 @@
         "cardBackUrl": {}
       }
     },
+    "FlashcardCreateRequest": {
+      "type": "object",
+      "properties": {
+        "flcaTitle": {
+          "type": "string",
+          "example": "Card title"
+        },
+        "flcaRecto": {
+          "type": "string",
+          "example": "Front side content"
+        },
+        "flcaVerso": {
+          "type": "string",
+          "example": "Back side content"
+        },
+        "flcaUrlRecto": {
+          "type": "string",
+          "example": "https://example.com/front-image.jpg"
+        },
+        "flcaUrlVerso": {
+          "type": "string",
+          "example": "https://example.com/back-image.jpg"
+        },
+        "collId": {
+          "type": "number",
+          "example": 1
+        }
+      }
+    },
+    "FlashcardCreateResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "Flashcard created successfully"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "cardId": {
+              "type": "number",
+              "example": 42
+            },
+            "title": {
+              "type": "string",
+              "example": "Card title"
+            },
+            "collectionId": {
+              "type": "number",
+              "example": 1
+            }
+          }
+        }
+      }
+    },
+    "FlashcardDetail": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "Flashcard retrieved successfully"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "flcaId": {
+              "type": "number",
+              "example": 1
+            },
+            "flcaTitle": {
+              "type": "string",
+              "example": "Card title"
+            },
+            "flcaRecto": {
+              "type": "string",
+              "example": "Front side content"
+            },
+            "flcaVerso": {
+              "type": "string",
+              "example": "Back side content"
+            },
+            "flcaUrlRecto": {
+              "type": "string",
+              "example": "https://example.com/front-image.jpg"
+            },
+            "flcaUrlVerso": {
+              "type": "string",
+              "example": "https://example.com/back-image.jpg"
+            },
+            "collId": {
+              "type": "number",
+              "example": 1
+            }
+          }
+        }
+      }
+    },
     "ReviewRequest": {
       "type": "object",
       "properties": {
