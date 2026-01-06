@@ -16,6 +16,7 @@ services:
       - mailpit
     networks:
       - app-network
+    command: sh -c "npm run db:push && npm run db:seed && npm run dev"
 
   mailpit:
     image: axllent/mailpit:latest
