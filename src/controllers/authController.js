@@ -209,15 +209,15 @@ export const verifyEmail = async (req, res) => {
     }
     #swagger.responses[200] = {
       description: 'Email verified successfully or already verified',
-      schema: { $ref: '#/definitions/VerifyEmailResponse' }
+      content: {'text/html': {} }
     }
     #swagger.responses[400] = {
       description: 'User not found',
-      schema: { $ref: '#/definitions/Error' }
+      content: {'text/html': {} }
     }
     #swagger.responses[500] = {
       description: 'Verification error (invalid or expired token)',
-      schema: { $ref: '#/definitions/Error' }
+      content: {'text/html': {} }
     }
   */
     try{
@@ -231,15 +231,33 @@ export const verifyEmail = async (req, res) => {
             .where(eq(tUser.userId, decoded.userId));
 
         if(!user){
-            return res.status(400).json({
-                error: 'User not found'
-            });
+            return res.status(400).send(
+                `<!DOCTYPE html>
+                <html lang="fr">
+                <head>
+                    <meta charset="utf-8">
+                    <title>Error</title>
+                </head>
+                <body>
+                    <h1>User not found</h1>
+                </body>
+                </html>`
+            );
         }
 
-        if(user.status == 'VALIDATED'){
-            return res.status(200).json({
-                message: 'Email already verified'
-            });
+        if(user.userStatus == 'VALIDATED'){
+            return res.status(200).send(
+                `<!DOCTYPE html>
+                <html lang="fr">
+                <head>
+                    <meta charset="utf-8">
+                    <title>Email verified </title>
+                </head>
+                <body>
+                    <h1>Email already verified</h1>
+                </body>
+                </html>`
+            );
         }
 
         await db
@@ -247,14 +265,31 @@ export const verifyEmail = async (req, res) => {
             .set({userStatus: 'VALIDATED'})
             .where(eq(tUser.userId, decoded.userId));
 
-        return res.status(200).json({
-            message: "Email verified successfully"
-        });
+        return res.status(200).send(
+            `<!DOCTYPE html>
+            <html lang="fr">
+            <head>
+                <meta charset="utf-8">
+                <title>Email verified </title>
+            </head>
+            <body>
+                <h1>Email verified succesfully</h1>
+            </body>
+            </html>`
+        );
     }catch(error){
         console.log(error);
-        res.status(500).json({
-            error: 'Failed to verify email',
-            detail: error.message
-        });
+        res.status(500).send(
+            `<!DOCTYPE html>
+            <html lang="fr">
+            <head>
+                <meta charset="utf-8">
+                <title>Error</title>
+            </head>
+            <body>
+                <h1>An unexpected error occurred</h1>
+            </body>
+            </html>`
+        );
     }
 }
