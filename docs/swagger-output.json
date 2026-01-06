@@ -267,20 +267,20 @@
         "responses": {
           "200": {
             "description": "Email verified successfully or already verified",
-            "schema": {
-              "$ref": "#/definitions/VerifyEmailResponse"
+            "content": {
+              "text/html": {}
             }
           },
           "400": {
             "description": "User not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
+            "content": {
+              "text/html": {}
             }
           },
           "500": {
             "description": "Verification error (invalid or expired token)",
-            "schema": {
-              "$ref": "#/definitions/Error"
+            "content": {
+              "text/html": {}
             }
           }
         },
