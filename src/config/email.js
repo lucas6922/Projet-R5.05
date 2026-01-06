@@ -5,7 +5,7 @@ export const sendVerificationEmail = async (email, token) => {
 
     var transport = nodemailer.createTransport({
         host: process.env.MAIL_HOST || "mailpit",
-        port: process.env.MAIL_HOST || 1025,
+        port: process.env.MAIL_PORT || 1025,
     });
 
     const sender = {
