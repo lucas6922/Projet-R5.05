@@ -2,19 +2,14 @@ import 'dotenv/config'
 import nodemailer from 'nodemailer';
 
 export const sendVerificationEmail = async (email, token) => {
-    const TOKEN = process.env.MAILTRAP_TOKEN;
 
     var transport = nodemailer.createTransport({
-        host: "sandbox.smtp.mailtrap.io",
-        port: 2525,
-        auth: {
-            user: "37afb1bde4656f",
-            pass: process.env.MAILTRAP_TOKEN
-        }
+        host: process.env.MAIL_HOST || "mailpit",
+        port: process.env.MAIL_HOST || 1025,
     });
 
     const sender = {
-        address: "hello@demomailtrap.co",
+        address: "project-r505@example.com",
         name: "Projet R505",
     };
 
