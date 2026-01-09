@@ -102,7 +102,6 @@ export const createCard = async (req, res) => {
     const { collId } = req.params;
     try{
         const data = {
-            flcaTitle: req.body.flcaTitle,
             flcaRecto: req.body.flcaRecto,
             flcaVerso: req.body.flcaVerso,
             flcaUrlRecto: req.body.flcaUrlRecto,
@@ -115,9 +114,6 @@ export const createCard = async (req, res) => {
         .from(tCollection)
         .where(and(eq(tCollection.collId, collId), eq(tCollection.userId, req.user)));
 
-        console.log("collId : ", collId);
-        console.log("user : ", req.user);
-        console.log("auth: ", collAuthorization);
         if(collAuthorization.length === 0){
             return res.status(403).json({
                 error: "You do not have permission to add cards to this collection"
@@ -414,5 +410,67 @@ export const getCardsToTrain = async (req, res) =>{
             detail: error.message
         })
     }
+}
 
+export const updateCard = async (req, res) => {
+    const { flcaId } = req.params;
+    const userId = req.user;
+    const updateData = req.body;
+
+    try {
+        const [flashcard] = await db
+            .select({
+                flcaId: tFlashCard.flcaId,
+                collId: tFlashCard.collId
+            })
+            .from(tFlashCard)
+            .where(eq(tFlashCard.flcaId, flcaId))
+            .limit(1);
+
+        if (flashcard.length === 0) {
+            return res.status(404).json({
+                error: "Flashcard not found"
+            });
+        }
+
+        const collection = await db
+            .select()
+            .from(tCollection)
+            .where(
+                and(
+                    eq(tCollection.collId, flashcard.collId),
+                    eq(tCollection.userId, userId)
+                )
+            )
+            .limit(1);
+
+        if (collection.length === 0) {
+            return res.status(404).json({
+                error: "Flashcard not found"
+            });
+        }
+
+        const [updatedCard] = await db
+            .update(tFlashCard)
+            .set(updateData)
+            .where(eq(tFlashCard.flcaId, flcaId))
+            .returning();
+
+        return res.status(200).json({
+            message: "Flashcard updated successfully",
+            data: {
+                flcaId: updatedCard.flcaId,
+                flcaRecto: updatedCard.flcaRecto,
+                flcaVerso: updatedCard.flcaVerso,
+                flcaUrlRecto: updatedCard.flcaUrlRecto,
+                flcaUrlVerso: updatedCard.flcaUrlVerso
+            }
+        });
+    } catch (error) {
+        return res.status(500).json({
+            error: 'Failed to update flashcard',
+            detail: error.message
+        });
+    }
+    
 }

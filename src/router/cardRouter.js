@@ -1,10 +1,8 @@
 import { Router } from 'express'
 
-import { getCard, getCardsToTrain, deleteCard, reviewCard } from '../controllers/cardController.js';
+import { getCard, deleteCard, reviewCard, updateCard} from '../controllers/cardController.js';
 import { validateBody, validateParams } from '../middleware/validation.js';
-import { cardIdSchema, reviewCardLevelSchema } from '../models/card.js';
-
-import { collectionIdSchema } from '../models/collection.js';
+import { cardIdSchema, reviewCardLevelSchema, updateCardSchema } from '../models/card.js';
 
 import { authenticateToken } from '../middleware/authenticateToken.js'
 
@@ -18,6 +16,7 @@ router.delete('/:flcaId', validateParams(cardIdSchema), deleteCard)
 
 router.post('/:flcaId/reviews', validateParams(cardIdSchema), validateBody(reviewCardLevelSchema), reviewCard)
 
+router.put('/:flcaId', validateParams(cardIdSchema), validateBody(updateCardSchema), updateCard)
 
 
 
