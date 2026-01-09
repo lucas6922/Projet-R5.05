@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 export const createCardSchema = z.object({
-    flcaTitle: z.string().min(1).max(50),
     flcaRecto: z.string().min(1).max(255),
     flcaVerso: z.string().min(1).max(255),
     flcaUrlRecto: z.string().max(255),
@@ -15,3 +14,5 @@ export const cardIdSchema = z.object({
 export const reviewCardLevelSchema = z.object({
     revisionLevel: z.int().min(1).max(5)
 })
+
+export const updateCardSchema = createCardSchema;

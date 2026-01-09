@@ -144,14 +144,13 @@ export const createCollection = async (req, res) => {
     }
     */
     try{
-        console.log("req : ", req.user)
         const data = {
             collTitle: req.body.collTitle,
             collDesc: req.body.collDesc,
             collVisibility: req.body.collVisibility,
             userId: req.user, 
         };
-        console.log(req.body)
+        
         const result = await db
         .insert(tCollection)
         .values(data)
@@ -216,7 +215,6 @@ export const editCollection = async (req, res) => {
     }
     */
     try{
-        console.log(req.body)
         const result = await db
         .update(tCollection)
         .set(req.body)
@@ -275,10 +273,8 @@ export const deleteCollection = async (req, res) => {
     }
     */
     const { collId } = req.params;
-    console.log(collId)
 
     try{
-        console.log(collId)
         const result = await db
         .delete(tCollection)
         .where(eq(tCollection.collId, collId))
@@ -331,9 +327,7 @@ export const searchPublicCollections = async (req, res) => {
       schema: { $ref: '#/definitions/Error' }
     }
   */
-  console.log("req.query : ", req.query)
   const { search } = req.query
-  console.log("search : ", search)
   try{
     const collections = await db
       .select({
@@ -347,8 +341,6 @@ export const searchPublicCollections = async (req, res) => {
           like(tCollection.collTitle, `%${search}%`)
         )
       );
-    
-    console.log("collections : ", collections)
 
     return res.status(200).json({
       message: 'Public collection retrieve successfully',
