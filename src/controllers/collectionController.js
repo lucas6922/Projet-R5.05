@@ -1,6 +1,6 @@
 import { db } from '../db/database.js'
 import { tCollection } from '../db/schema.js'
-import { eq, or, and } from 'drizzle-orm'
+import { eq, or, and, like } from 'drizzle-orm'
 
 /**
  * 
@@ -299,4 +299,65 @@ export const deleteCollection = async (req, res) => {
             detail: error.message
         })
     }
+}
+
+
+/**
+ * 
+ * @param {request} req 
+ * @param {response} res 
+ */
+export const searchPublicCollections = async (req, res) => {
+  /* 
+    #swagger.auto = false
+    #swagger.tags = ['Collection']
+    #swagger.summary = 'Search public collections'
+    #swagger.description = 'Search for public collections by title'
+    #swagger.parameters['search'] = {
+      in: 'query',
+      description: 'Search term',
+      required: true,
+      type: 'string'
+    }
+    #swagger.responses[200] = {
+      description: 'Search completed successfully',
+      schema: { $ref: '#/definitions/SearchCollectionResponse' }
+    }
+    #swagger.responses[400] = {
+      description: 'Invalid query parameters'
+    }
+    #swagger.responses[500] = {
+      description: 'Server error',
+      schema: { $ref: '#/definitions/Error' }
+    }
+  */
+  console.log("req.query : ", req.query)
+  const { search } = req.query
+  console.log("search : ", search)
+  try{
+    const collections = await db
+      .select({
+        collTitle: tCollection.collTitle,
+        collDesc: tCollection.collDesc
+      })
+      .from(tCollection)
+      .where(
+        and(
+          eq(tCollection.collVisibility, 'PUBLIC'),
+          like(tCollection.collTitle, `%${search}%`)
+        )
+      );
+    
+    console.log("collections : ", collections)
+
+    return res.status(200).json({
+      message: 'Public collection retrieve successfully',
+      data: collections
+    })
+  } catch ( error ){
+    res.status(500).send({
+        error: `Failed to delete collection ${collId}`,
+        detail: error.message
+    })
+  }
 }
