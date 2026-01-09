@@ -98,6 +98,8 @@ export const createCard = async (req, res) => {
       schema: { $ref: '#/definitions/Error' }
     }
     */
+
+    const { collId } = req.params;
     try{
         const data = {
             flcaTitle: req.body.flcaTitle,
@@ -105,14 +107,17 @@ export const createCard = async (req, res) => {
             flcaVerso: req.body.flcaVerso,
             flcaUrlRecto: req.body.flcaUrlRecto,
             flcaUrlVerso: req.body.flcaUrlVerso,
-            collId: req.body.collId,
+            collId: collId,
         };
 
         const collAuthorization = await db
         .select()
         .from(tCollection)
-        .where(and(eq(tCollection.collId, req.body.collId), eq(tCollection.userId, req.user)));
+        .where(and(eq(tCollection.collId, collId), eq(tCollection.userId, req.user)));
 
+        console.log("collId : ", collId);
+        console.log("user : ", req.user);
+        console.log("auth: ", collAuthorization);
         if(collAuthorization.length === 0){
             return res.status(403).json({
                 error: "You do not have permission to add cards to this collection"
@@ -301,7 +306,7 @@ export const deleteCard = async (req, res) => {
             and(
                 or(
                     eq(tCollection.collVisibility, 'PUBLIC'),
-                    eq(tCollection.userId, req.user)
+                    eq(tCollection.userId, userId)
                 ),
                 eq(tFlashCard.flcaId, flcaId)
             )
@@ -359,11 +364,10 @@ export const getCardsCollection = async (req, res) =>{
 }
 
 
+//TODO faire différence entre acces denied et pas de carte à reviser
 export const getCardsToTrain = async (req, res) =>{
     try{
         const data = req.params.collId
-        console.log("User id : ", req.user)
-        console.log("Collection id : ", data)
         const result = await db
         .select({
             flcaId: tFlashCard.flcaId,

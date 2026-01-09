@@ -394,6 +394,141 @@
         ]
       }
     },
+    "/collections/{collId}/cards": {
+      "post": {
+        "tags": [
+          "Flashcards"
+        ],
+        "description": "Create a new flashcard in a collection. Only the collection owner can add cards.",
+        "parameters": [
+          {
+            "name": "collId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Flashcard data",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/FlashcardCreateRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Flashcard created successfully",
+            "schema": {
+              "$ref": "#/definitions/FlashcardCreateResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "User does not have permission to add cards to this collection",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "collId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/collections/{collId}/cards/due": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "collId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/admin/": {
       "get": {
         "tags": [
@@ -781,62 +916,7 @@
         ]
       }
     },
-    "/cards/": {
-      "post": {
-        "tags": [
-          "Flashcards"
-        ],
-        "description": "Create a new flashcard in a collection. Only the collection owner can add cards.",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "description": "Flashcard data",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/FlashcardCreateRequest"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Flashcard created successfully",
-            "schema": {
-              "$ref": "#/definitions/FlashcardCreateResponse"
-            }
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "User does not have permission to add cards to this collection",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "500": {
-            "description": "Server error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
-    "/cards/review/{flcaId}": {
+    "/cards/{flcaId}/review": {
       "post": {
         "tags": [
           "Flashcards"
@@ -905,82 +985,6 @@
             "bearerAuth": []
           }
         ]
-      }
-    },
-    "/cards/collection/{collId}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "collId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/cards/collection/to-train/{collId}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "collId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
       }
     }
   },
