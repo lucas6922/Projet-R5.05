@@ -16,7 +16,7 @@ router.get('/:flcaId', validateParams(cardIdSchema), getCard);
 
 router.delete('/:flcaId', validateParams(cardIdSchema), deleteCard)
 
-router.post('/:flcaId/review', validateParams(cardIdSchema), validateBody(reviewCardLevelSchema), reviewCard)
+router.post('/:flcaId/reviews', validateParams(cardIdSchema), validateBody(reviewCardLevelSchema), reviewCard)
 
 
 
