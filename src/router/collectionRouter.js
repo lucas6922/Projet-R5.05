@@ -13,7 +13,7 @@ router.use(authenticateToken)
 
 router.get('/:collId', validateParams(collectionIdSchema), getCollection);
 
-router.get('', getMyCollections);
+router.get('/', getMyCollections);
 
 router.post('/', validateBody(createCollectionSchema), createCollection);
 
