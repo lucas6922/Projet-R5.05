@@ -15,10 +15,10 @@ app.use(logger)
 
 // Request -> express.json() -> Logger -> Controller -> Response
 
+app.use('/collections', collectionRoutes)
 app.use('/admin', adminRoutes)
 app.use('/auth', authRoutes)
-app.use('/collection', collectionRoutes)
-app.use('/card', cardRoutes)
+app.use('/cards', cardRoutes)
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`)
 })

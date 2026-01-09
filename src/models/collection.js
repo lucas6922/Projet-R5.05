@@ -9,3 +9,7 @@ export const createCollectionSchema = z.object({
 export const collectionIdSchema = z.object({
     collId: z.uuid(),
 })
+
+export const searhCollectionSchema = z.object({
+    search: z.string().min(1).max(100)
+})

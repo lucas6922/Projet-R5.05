@@ -19,6 +19,327 @@
     }
   },
   "paths": {
+    "/collections/search": {
+      "get": {
+        "tags": [
+          "Collection"
+        ],
+        "summary": "Search public collections",
+        "description": "Search for public collections by title",
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Search term",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search completed successfully",
+            "schema": {
+              "$ref": "#/definitions/SearchCollectionResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid query parameters"
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/collections/{collId}": {
+      "get": {
+        "tags": [
+          "Collection"
+        ],
+        "summary": "Get a collection",
+        "description": "Retrieves collection information. Accessible if it is public or if the user is the owner.",
+        "parameters": [
+          {
+            "name": "collId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "Collection ID"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Collection retrieved successfully",
+            "schema": {
+              "$ref": "#/definitions/Collection"
+            }
+          },
+          "400": {
+            "description": "Invalid data",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Authentication token required",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Collection not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Collection"
+        ],
+        "summary": "Update a collection",
+        "description": "Updates the title, description or visibility of a collection. Only by the owner.",
+        "parameters": [
+          {
+            "name": "collId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "ID of the collection to update"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "New collection data",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CollectionInput"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Collection updated successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Collection edited"
+                },
+                "collection": {
+                  "$ref": "#/definitions/Collection"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Invalid data",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Collection not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Collection"
+        ],
+        "summary": "Delete a collection",
+        "description": "Deletes a collection and all its associated flashcards. Only by the owner.",
+        "parameters": [
+          {
+            "name": "collId",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "ID of the collection to delete"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Collection deleted successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Collection deleted"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Authentication token required",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Collection not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/collections/": {
+      "post": {
+        "tags": [
+          "Collection"
+        ],
+        "summary": "Create a collection",
+        "description": "Creates a new flashcard collection for the logged-in user",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Collection data to create",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CollectionInput"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Collection created successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Collection created"
+                },
+                "collection": {
+                  "$ref": "#/definitions/Collection"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid data",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Authentication token required",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/admin/": {
       "get": {
         "tags": [
@@ -287,347 +608,7 @@
         "security": []
       }
     },
-    "/collection/{collId}": {
-      "get": {
-        "tags": [
-          "Collection"
-        ],
-        "summary": "Get a collection",
-        "description": "Retrieves collection information. Accessible if it is public or if the user is the owner.",
-        "parameters": [
-          {
-            "name": "collId",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "Collection ID"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Collection retrieved successfully",
-            "schema": {
-              "$ref": "#/definitions/Collection"
-            }
-          },
-          "400": {
-            "description": "Invalid data",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Authentication token required",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "404": {
-            "description": "Collection not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "500": {
-            "description": "Server error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      },
-      "put": {
-        "tags": [
-          "Collection"
-        ],
-        "summary": "Update a collection",
-        "description": "Updates the title, description or visibility of a collection. Only by the owner.",
-        "parameters": [
-          {
-            "name": "collId",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "ID of the collection to update"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "description": "New collection data",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/CollectionInput"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Collection updated successfully",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "example": "Collection edited"
-                },
-                "collection": {
-                  "$ref": "#/definitions/Collection"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
-          },
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Invalid data",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Collection not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "500": {
-            "description": "Server error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      },
-      "delete": {
-        "tags": [
-          "Collection"
-        ],
-        "summary": "Delete a collection",
-        "description": "Deletes a collection and all its associated flashcards. Only by the owner.",
-        "parameters": [
-          {
-            "name": "collId",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "description": "ID of the collection to delete"
-          },
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Collection deleted successfully",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "example": "Collection deleted"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
-          },
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Authentication token required",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "404": {
-            "description": "Collection not found",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "500": {
-            "description": "Server error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
-    "/collection/": {
-      "get": {
-        "tags": [
-          "Collection"
-        ],
-        "summary": "Get my collections",
-        "description": "Returns all collections belonging to the logged-in user, sorted by title",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Collections list retrieved successfully",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "array"
-                },
-                "items": {
-                  "$ref": "#/definitions/Collection"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Authentication token required",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "500": {
-            "description": "Server error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      },
-      "post": {
-        "tags": [
-          "Collection"
-        ],
-        "summary": "Create a collection",
-        "description": "Creates a new flashcard collection for the logged-in user",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "description": "Collection data to create",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/CollectionInput"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Collection created successfully",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "example": "Collection created"
-                },
-                "collection": {
-                  "$ref": "#/definitions/Collection"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid data",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Authentication token required",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "500": {
-            "description": "Server error",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
-    "/card/{flcaId}": {
+    "/cards/{flcaId}": {
       "get": {
         "tags": [
           "Flashcards"
@@ -746,7 +727,7 @@
         ]
       }
     },
-    "/card/": {
+    "/cards/": {
       "post": {
         "tags": [
           "Flashcards"
@@ -801,7 +782,7 @@
         ]
       }
     },
-    "/card/review/{flcaId}": {
+    "/cards/review/{flcaId}": {
       "post": {
         "tags": [
           "Flashcards"
@@ -872,7 +853,7 @@
         ]
       }
     },
-    "/card/collection/{collId}": {
+    "/cards/collection/{collId}": {
       "get": {
         "description": "",
         "parameters": [
@@ -910,7 +891,7 @@
         }
       }
     },
-    "/card/collection/to-train/{collId}": {
+    "/cards/collection/to-train/{collId}": {
       "get": {
         "description": "",
         "parameters": [
@@ -1289,6 +1270,31 @@
             "isNew": {
               "type": "boolean",
               "example": false
+            }
+          }
+        }
+      }
+    },
+    "SearchCollectionResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "Public collection retrieve successfully"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "collTitle": {
+                "type": "string",
+                "example": "JavaScript Advanced"
+              },
+              "collDesc": {
+                "type": "string",
+                "example": "Advanced JavaScript concepts and patterns"
+              }
             }
           }
         }

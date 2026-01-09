@@ -117,6 +117,19 @@ const doc = {
         isNew: false
       }
     },
+    SearchCollectionResponse: {
+      message: 'Public collection retrieve successfully',
+      data: [
+        {
+          collTitle: 'JavaScript Basics',
+          collDesc: 'Learn the fundamentals of JavaScript programming'
+        },
+        {
+          collTitle: 'JavaScript Advanced',
+          collDesc: 'Advanced JavaScript concepts and patterns'
+        }
+      ]
+    },
     Error: {
       error: 'Error description',
       detail: 'Additional details'
