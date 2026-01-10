@@ -11,29 +11,30 @@ import { eq, or, and } from 'drizzle-orm'
  */
 export const getCard = async (req, res) =>{
     /* 
-    #swagger.tags = ['Flashcards']
-    #swagger.security = [{
-      "bearerAuth": []
-    }]
-    #swagger.description = 'Get a specific flashcard by ID. Accessible if the card belongs to a public collection or to the authenticated user.'
-    #swagger.parameters['flcaId'] = {
-      in: 'path',
-      description: 'ID of the flashcard to retrieve',
-      required: true,
-      type: 'integer'
-    }
-    #swagger.responses[200] = {
-      description: 'Flashcard retrieved successfully',
-      schema: { $ref: '#/definitions/FlashcardDetail' }
-    }
-    #swagger.responses[404] = {
-      description: 'Flashcard not found or not accessible',
-      schema: { $ref: '#/definitions/Error' }
-    }
-    #swagger.responses[500] = {
-      description: 'Server error',
-      schema: { $ref: '#/definitions/Error' }
-    }
+        #swagger.tags = ['Flashcards']    
+        #swagger.summary = 'Get a flashcard'
+        #swagger.security = [{
+        "bearerAuth": []
+        }]
+        #swagger.description = 'Get a specific flashcard by ID. Accessible if the card belongs to a public collection or to the authenticated user.'
+        #swagger.parameters['flcaId'] = {
+        in: 'path',
+        description: 'ID of the flashcard to retrieve',
+        required: true,
+        type: 'integer'
+        }
+        #swagger.responses[200] = {
+        description: 'Flashcard retrieved successfully',
+        schema: { $ref: '#/definitions/FlashcardDetail' }
+        }
+        #swagger.responses[404] = {
+        description: 'Flashcard not found or not accessible',
+        schema: { $ref: '#/definitions/Error' }
+        }
+        #swagger.responses[500] = {
+        description: 'Server error',
+        schema: { $ref: '#/definitions/Error' }
+        }
     */
 
     const { flcaId } = req.params
@@ -76,29 +77,30 @@ export const getCard = async (req, res) =>{
  */
 export const createCard = async (req, res) => {
     /* 
-    #swagger.tags = ['Flashcards']
-    #swagger.security = [{
-      "bearerAuth": []
-    }]
-    #swagger.description = 'Create a new flashcard in a collection. Only the collection owner can add cards.'
-    #swagger.parameters['body'] = {
-      in: 'body',
-      description: 'Flashcard data',
-      required: true,
-      schema: { $ref: '#/definitions/FlashcardCreateRequest' }
-    }
-    #swagger.responses[201] = {
-      description: 'Flashcard created successfully',
-      schema: { $ref: '#/definitions/FlashcardCreateResponse' }
-    }
-    #swagger.responses[403] = {
-      description: 'User does not have permission to add cards to this collection',
-      schema: { $ref: '#/definitions/Error' }
-    }
-    #swagger.responses[500] = {
-      description: 'Server error',
-      schema: { $ref: '#/definitions/Error' }
-    }
+        #swagger.tags = ['Flashcards']    
+        #swagger.summary = 'Create a flashcard'
+        #swagger.security = [{
+        "bearerAuth": []
+        }]
+        #swagger.description = 'Create a new flashcard in a collection. Only the collection owner can add cards.'
+        #swagger.parameters['body'] = {
+        in: 'body',
+        description: 'Flashcard data',
+        required: true,
+        schema: { $ref: '#/definitions/FlashcardCreateRequest' }
+        }
+        #swagger.responses[201] = {
+        description: 'Flashcard created successfully',
+        schema: { $ref: '#/definitions/FlashcardCreateResponse' }
+        }
+        #swagger.responses[403] = {
+        description: 'User does not have permission to add cards to this collection',
+        schema: { $ref: '#/definitions/Error' }
+        }
+        #swagger.responses[500] = {
+        description: 'Server error',
+        schema: { $ref: '#/definitions/Error' }
+        }
     */
 
     const { collId } = req.params;
@@ -144,41 +146,41 @@ export const createCard = async (req, res) => {
 //si la révision n'existe pas, la crée niveau 1
 export const reviewCard = async (req, res) => {
     /* 
-    #swagger.tags = ['Flashcards']
-    #swagger.security = [{
-      "bearerAuth": []
-    }]
-    #swagger.description = 'Creates or updates a flashcard review for the authenticated user'
-    #swagger.parameters['flcaId'] = {
-      in: 'path',
-      description: 'ID of the flashcard to review',
-      required: true,
-      type: 'integer'
-    }
-    #swagger.parameters['body'] = {
-      in: 'body',
-      description: 'Review data',
-      required: true,
-      schema: { $ref: '#/definitions/ReviewRequest' }
-    }
-    #swagger.responses[200] = {
-      description: 'Revision updated successfully',
-      schema: { $ref: '#/definitions/ReviewResponse' }
-    }
-    #swagger.responses[201] = {
-      description: 'New revision created successfully',
-      schema: { $ref: '#/definitions/ReviewResponse' }
-    }
-    #swagger.responses[404] = {
-      description: 'Flashcard not found or not accessible',
-      schema: { $ref: '#/definitions/Error' }
-    }
-    #swagger.responses[500] = {
-      description: 'Server error',
-      schema: { $ref: '#/definitions/Error' }
-    }
-    */
-    
+        #swagger.tags = ['Revision']    
+        #swagger.summary = 'Review a flashcard'
+        #swagger.security = [{
+        "bearerAuth": []
+        }]
+        #swagger.description = 'Creates or updates a flashcard review for the authenticated user'
+        #swagger.parameters['flcaId'] = {
+        in: 'path',
+        description: 'ID of the flashcard to review',
+        required: true,
+        type: 'integer'
+        }
+        #swagger.parameters['body'] = {
+        in: 'body',
+        description: 'Review data',
+        required: true,
+        schema: { $ref: '#/definitions/ReviewRequest' }
+        }
+        #swagger.responses[200] = {
+        description: 'Revision updated successfully',
+        schema: { $ref: '#/definitions/ReviewResponse' }
+        }
+        #swagger.responses[201] = {
+        description: 'New revision created successfully',
+        schema: { $ref: '#/definitions/ReviewResponse' }
+        }
+        #swagger.responses[404] = {
+        description: 'Flashcard not found or not accessible',
+        schema: { $ref: '#/definitions/Error' }
+        }
+        #swagger.responses[500] = {
+        description: 'Server error',
+        schema: { $ref: '#/definitions/Error' }
+        }
+    */    
     const { flcaId } = req.params;
     const userId = req.user
     const {revisionLevel} = req.body
@@ -266,31 +268,32 @@ export const reviewCard = async (req, res) => {
  */
 export const deleteCard = async (req, res) => {
     /* 
-    #swagger.tags = ['Flashcards']
-    #swagger.security = [{
-      "bearerAuth": []
-    }]
-    #swagger.description = 'Delete a flashcard. Only the collection owner can delete cards from their collections.'
-    #swagger.parameters['flcaId'] = {
-      in: 'path',
-      description: 'ID of the flashcard to delete',
-      required: true,
-      type: 'integer'
-    }
-    #swagger.responses[200] = {
-      description: 'Flashcard deleted successfully',
-      schema: {
-        message: 'Flashcard deleted successfully'
-      }
-    }
-    #swagger.responses[404] = {
-      description: 'Flashcard not found or not owned by user',
-      schema: { $ref: '#/definitions/Error' }
-    }
-    #swagger.responses[500] = {
-      description: 'Server error',
-      schema: { $ref: '#/definitions/Error' }
-    }
+        #swagger.tags = ['Flashcards']    
+        #swagger.summary = 'Delete a flashcard'
+        #swagger.security = [{
+        "bearerAuth": []
+        }]
+        #swagger.description = 'Delete a flashcard. Only the collection owner can delete cards from their collections.'
+        #swagger.parameters['flcaId'] = {
+        in: 'path',
+        description: 'ID of the flashcard to delete',
+        required: true,
+        type: 'integer'
+        }
+        #swagger.responses[200] = {
+        description: 'Flashcard deleted successfully',
+        schema: {
+            message: 'Flashcard deleted successfully'
+        }
+        }
+        #swagger.responses[404] = {
+        description: 'Flashcard not found or not owned by user',
+        schema: { $ref: '#/definitions/Error' }
+        }
+        #swagger.responses[500] = {
+        description: 'Server error',
+        schema: { $ref: '#/definitions/Error' }
+        }
     */
     const { flcaId } = req.params;
     const userId = req.user
@@ -328,6 +331,34 @@ export const deleteCard = async (req, res) => {
 }
 
 export const getCardsCollection = async (req, res) =>{
+    /*
+        #swagger.tags = ['Flashcards']
+        #swagger.summary = 'Get flashcards of a collection'
+        #swagger.description = 'Returns all flashcards for a given collection if it is PUBLIC or owned by the authenticated user.'
+        #swagger.security = [{ bearerAuth: [] }]
+
+        #swagger.parameters['collId'] = {
+            in: 'path',
+            description: 'Collection id',
+            required: true,
+            type: 'string'
+        }
+
+        #swagger.responses[200] = {
+            description: 'Cards fetched successfully',
+            schema: [{ $ref: '#/definitions/Flashcard' }]
+        }
+
+        #swagger.responses[404] = {
+            description: 'Collection not found or access denied',
+            schema: { $ref: '#/definitions/Error' }
+        }
+
+        #swagger.responses[500] = {
+            description: 'Server error',
+            schema: { $ref: '#/definitions/Error' }
+        }
+    */
     try{
         const data = req.params.collId
         const result = await db
@@ -361,6 +392,34 @@ export const getCardsCollection = async (req, res) =>{
 
 //TODO faire différence entre acces denied et pas de carte à reviser
 export const getCardsToTrain = async (req, res) =>{
+    /*
+        #swagger.tags = ['Revision']
+        #swagger.summary = 'Get cards to train'
+        #swagger.description = 'Returns flashcards of a collection that are due for review for the authenticated user (includes never-reviewed cards).'
+        #swagger.security = [{ bearerAuth: [] }]
+
+        #swagger.parameters['collId'] = {
+            in: 'path',
+            description: 'Collection id',
+            required: true,
+            type: 'string'
+        }
+
+        #swagger.responses[200] = {
+            description: 'Cards due for training',
+            schema: [{ $ref: '#/definitions/CardToTrain' }]
+        }
+
+        #swagger.responses[404] = {
+            description: 'Card not found or access denied',
+            schema: { $ref: '#/definitions/Error' }
+        }
+
+        #swagger.responses[500] = {
+            description: 'Server error',
+            schema: { $ref: '#/definitions/Error' }
+        }
+    */
     try{
         const data = req.params.collId
         const result = await db
@@ -412,6 +471,41 @@ export const getCardsToTrain = async (req, res) =>{
 }
 
 export const updateCard = async (req, res) => {
+    /*
+        #swagger.tags = ['Flashcards']
+        #swagger.summary = 'Update a flashcard'
+        #swagger.description = 'Updates a flashcard. Only the owner of the collection can update the card.'
+        #swagger.security = [{ bearerAuth: [] }]
+
+        #swagger.parameters['flcaId'] = {
+            in: 'path',
+            description: 'Flashcard id',
+            required: true,
+            type: 'string'
+        }
+
+        #swagger.parameters['body'] = {
+            in: 'body',
+            description: 'Fields to update (partial update). Only provided fields are updated.',
+            required: true,
+            schema: { $ref: '#/definitions/UpdateFlashcardRequest' }
+        }
+
+        #swagger.responses[200] = {
+            description: 'Flashcard updated successfully',
+            schema: { $ref: '#/definitions/UpdateFlashcardResponse' }
+        }
+
+        #swagger.responses[404] = {
+            description: 'Flashcard not found or inaccessible',
+            schema: { $ref: '#/definitions/Error' }
+        }
+
+        #swagger.responses[500] = {
+            description: 'Server error',
+            schema: { $ref: '#/definitions/Error' }
+        }
+    */
     const { flcaId } = req.params;
     const userId = req.user;
     const updateData = req.body;
