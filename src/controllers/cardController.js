@@ -35,8 +35,10 @@ export const getCard = async (req, res) =>{
       schema: { $ref: '#/definitions/Error' }
     }
     */
+
+    const { flcaId } = req.params
     try{
-        const result = await db
+        const [result] = await db
         .select({
             flcaId: tFlashCard.flcaId,
             flcaRecto: tFlashCard.flcaRecto,
@@ -47,9 +49,9 @@ export const getCard = async (req, res) =>{
         })
         .from(tFlashCard)
         .innerJoin(tCollection, eq(tCollection.collId, tFlashCard.collId))
-        .where(and(or(eq(tCollection.collVisibility, 'PUBLIC'),eq(tCollection.userId, req.user)),eq(tFlashCard.flcaId, req.params.flcaId)));
+        .where(and(or(eq(tCollection.collVisibility, 'PUBLIC'),eq(tCollection.userId, req.user)),eq(tFlashCard.flcaId, flcaId)));
         
-        if(result.length === 0){
+        if(!result){
             return res.status(404).json({
                 error: 'Not found',
                 message: `Flashcard with id ${flcaId} not found or not accessible`
@@ -300,10 +302,7 @@ export const deleteCard = async (req, res) => {
         .innerJoin(tCollection, eq(tCollection.collId, tFlashCard.collId))
         .where(
             and(
-                or(
-                    eq(tCollection.collVisibility, 'PUBLIC'),
-                    eq(tCollection.userId, userId)
-                ),
+                eq(tCollection.userId, userId),
                 eq(tFlashCard.flcaId, flcaId)
             )
         );
@@ -429,7 +428,7 @@ export const updateCard = async (req, res) => {
 
         if (flashcard.length === 0) {
             return res.status(404).json({
-                error: "Flashcard not found"
+                error: "Flashcard not found or inaccessible"
             });
         }
 
@@ -446,7 +445,7 @@ export const updateCard = async (req, res) => {
 
         if (collection.length === 0) {
             return res.status(404).json({
-                error: "Flashcard not found"
+                error: "Flashcard not found or inaccessible"
             });
         }
 

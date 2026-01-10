@@ -28,14 +28,24 @@ export const getMyCollections = async (req, res) =>{
       schema: { $ref: '#/definitions/Error' }
     }
     */
+    const userId = req.user
     try{
         const result = await db
         .select()
         .from(tCollection)
-        .where(eq(tCollection.userId, req.user.userId))
+        .where(eq(tCollection.userId, userId))
         .orderBy('collTitle', 'asc')
 
-        res.status(200).json(result)
+        if(result.length == 0){
+          return res.status(404).json({
+            error: "No collections found",
+          });
+        }
+
+        res.status(200).json({
+          message: 'Collections retrieve successfully',
+          collections: result
+        })
     } catch ( error ){
         res.status(500).send({
             error: 'Failed to fetch collections',
@@ -214,20 +224,26 @@ export const editCollection = async (req, res) => {
       schema: { $ref: '#/definitions/Error' }
     }
     */
+   const collId = req.params.collId
     try{
-        const result = await db
+        const [result] = await db
         .update(tCollection)
         .set(req.body)
-        .where(eq(tCollection.collId, req.params.collId))
+        .where(eq(tCollection.collId, collId))
         .returning()
 
+        if(!result){
+          res.status(404).json({
+            error: "Collection not found"
+          });
+        }
         res.status(201).json({
-            message: `Collection ${id} edited`,
+            message: `Collection ${collId} edited`,
             collection: result
         });
     } catch (error){
         res.status(500).send({
-            error: `Failed to edit collection ${id}`,
+            error: `Failed to edit collection ${collId}`,
             detail: error.message
         })
     }
@@ -275,7 +291,7 @@ export const deleteCollection = async (req, res) => {
     const { collId } = req.params;
 
     try{
-        const result = await db
+        const [result] = await db
         .delete(tCollection)
         .where(eq(tCollection.collId, collId))
         .returning()

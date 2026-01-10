@@ -27,7 +27,6 @@ export const authenticateAdmin = async (req, res, next) => {
         next()
         
     } catch ( error ){
-        console.log(error)
         res.status(500).send({
             error: 'Failed to authenticate admin.',
             detail: error.message
