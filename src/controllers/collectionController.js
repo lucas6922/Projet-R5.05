@@ -47,7 +47,6 @@ export const getMyCollections = async (req, res) =>{
           collections: result
         })
     } catch ( error ){
-      console.log(error)
         res.status(500).send({
             error: 'Failed to fetch collections',
             detail: error.message
