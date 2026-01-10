@@ -1,7 +1,7 @@
 import { db } from '../db/database.js'
-import { tUser } from '../db/schema.js'
-import { eq, or, and } from 'drizzle-orm'
-
+import { tCollection, tFlashCard, tRevision, tUser } from '../db/schema.js'
+import { eq, inArray } from 'drizzle-orm'
+import { ANONYMOUS_USER_ID } from '../constants.js'
 /**
  * 
  * @param {request} req 
@@ -60,16 +60,26 @@ export const getUser = async (req, res) =>{
         description: 'Failed to fetch user'
         }
     */
+   const { userId } = req.params
+   
     try{
-        const result = await db
+        const [result] = await db
         .select()
         .from(tUser)
-        .where(eq(tUser.userId, req.user.userId))
+        .where(eq(tUser.userId, userId))
 
-        res.status(200).json(result)
+        if(!result){
+            return res.status(404).json({
+                error: 'User not found'
+            })
+        }
+        res.status(200).json({
+            message: 'User retrieve successfully',
+            user: result
+        })
     } catch ( error ){
         res.status(500).send({
-            error: `Failed to fetch user ${id}`,
+            error: `Failed to fetch user ${userId}`,
             detail: error.message
         })
     }
@@ -108,24 +118,85 @@ export const deleteUser = async (req, res) => {
         description: 'Failed to delete user'
         }
     */
+   //on va tout supprimer pour des raison de protections de données
+
+    const { userId } = req.params
+
     try{
-        const result = await db
-        .delete(tUser)
-        .where(eq(tUser.userId, req.user.userId))
-        .returning()
+
+        if (userId === ANONYMOUS_USER_ID) {
+            return res.status(403).json({
+                error: 'Cannot delete anonymous user'
+            })
+        }
+
+        const [user] = await db
+        .select()
+        .from(tUser)
+        .where(eq(tUser.userId, userId));
         
-        if(!result){
-            res.status(404).send({
+        if(!user){
+            return res.status(404).send({
                 error: 'User not found',
             })
         }
 
-        res.status(201).send({
-            message: `User ${id} deleted`
+        const userCollections = await db
+            .select()
+            .from(tCollection)
+            .where(eq(tCollection.userId, userId));
+
+        const publicCollectinos = userCollections.filter(c => c.collVisibility === 'PUBLIC')
+        const privateCollectinos = userCollections.filter(c => c.collVisibility === 'PRIVATE')
+        
+        //si collections public les anonymiser
+        if(publicCollectinos.length > 0){
+            await db.update(tCollection)
+                .set({ userId: ANONYMOUS_USER_ID })
+                .where(inArray(tCollection.collId, publicCollectinos.map(c => c.collId)));
+        }
+
+        //si collection privé les supp avec les revisions et les flasgcard associé
+        if(privateCollectinos.length > 0){
+            const privateCollectionIds = privateCollectinos.map(c => c.collId);
+            const privateFlashcards = await db
+                .select({ flcaId: tFlashCard.flcaId })
+                .from(tFlashCard)
+                .where(inArray(tFlashCard.collId, privateCollectionIds));
+
+            
+            
+            if (privateFlashcards.length > 0) {
+                await db.delete(tRevision)
+                    .where(inArray(tRevision.flcaId, privateFlashcards.map(f => f.flcaId)));
+
+                await db.delete(tFlashCard)
+                    .where(inArray(tFlashCard.collId, privateCollectionIds));
+                
+                await db.delete(tCollection)
+                    .where(inArray(tCollection.collId, privateCollectionIds));
+            }
+        }
+
+        await db.delete(tRevision).where(eq(tRevision.userId, userId));
+
+        const [result] = await db
+            .delete(tUser)
+            .where(eq(tUser.userId, userId))
+            .returning();
+
+
+        res.status(200).json({
+            message: `User ${userId} and all related data deleted successfully`,
+            collectionAnonymised: publicCollectinos.length,
+            collectionDeleted: privateCollectinos.length,
+            user: result
         });
+
     } catch ( error ){
+        console.log(error)
         res.status(500).send({
-            error: `Failed to delete user ${id}`,
+            error: `Failed to delete user ${userId}`,
             detail: error.message
         })
     }

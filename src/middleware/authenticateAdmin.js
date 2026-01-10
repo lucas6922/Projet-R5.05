@@ -1,8 +1,7 @@
 import { request, response } from 'express'
 import { db } from '../db/database.js'
-import { tUser } from '../db/schema.js'
-import { eq, or, and } from 'drizzle-orm'
-import jwt from 'jsonwebtoken'
+import { tAppRole, tUser } from '../db/schema.js'
+import { eq, and } from 'drizzle-orm'
 
 /**
  * 
@@ -13,13 +12,14 @@ import jwt from 'jsonwebtoken'
 export const authenticateAdmin = async (req, res, next) => {
     try{
         const result = await db
-        .select(tUser.userId)
+        .select({userId: tUser.userId})
         .from(tUser)
-        .where(and(eq(tUser.userId, req.user.userId), eq(tUser.userStatus, 'ADMIN')))
-        .orderBy('userId', 'asc')
+        .innerJoin(tAppRole, eq(tUser.aproId, tAppRole.aproId))
+        .where(and(eq(tUser.userId, req.user), eq(tAppRole.aproLabel, 'ADMIN')))
+        .limit(1)
 
-        if(result.length > 0) {
-            return res.status(400).json({
+        if(result.length === 0) {
+            return res.status(403).json({
                 error: 'User is not an admin'
             });
         }
@@ -27,6 +27,7 @@ export const authenticateAdmin = async (req, res, next) => {
         next()
         
     } catch ( error ){
+        console.log(error)
         res.status(500).send({
             error: 'Failed to authenticate admin.',
             detail: error.message

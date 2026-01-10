@@ -3,15 +3,16 @@ import { getUsers, getUser, deleteUser } from '../controllers/adminController.js
 import { validateParams } from '../middleware/validation.js';
 import { userIdSchema } from '../models/admin.js'
 import { authenticateAdmin } from '../middleware/authenticateAdmin.js'
-
+import { authenticateToken } from '../middleware/authenticateToken.js'
 const router = Router()
 
+router.use(authenticateToken)
 router.use(authenticateAdmin)
 
-router.get('/', getUsers);
+router.get('/users', getUsers);
 
-router.get('/:userId', validateParams(userIdSchema), getUser);
+router.get('/users/:userId', validateParams(userIdSchema), getUser);
 
-router.delete('/:userId', validateParams(userIdSchema), deleteUser);
+router.delete('/users/:userId', validateParams(userIdSchema), deleteUser);
 
 export default router;

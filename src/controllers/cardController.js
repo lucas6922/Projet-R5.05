@@ -1,6 +1,6 @@
 import { db } from '../db/database.js'
 import { tFlashCard,tCollection, tRevision, tLevel } from '../db/schema.js'
-import { eq, or, and, isNull, sql } from 'drizzle-orm'
+import { eq, or, and } from 'drizzle-orm'
 
 
 

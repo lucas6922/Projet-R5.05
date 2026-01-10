@@ -2,7 +2,9 @@ import { db } from './database.js'
 import { tAppRole, tUser, tCollection, tFlashCard, tLevel, tRevision } from './schema.js'
 import { faker } from '@faker-js/faker'
 import bcrypt from 'bcrypt'
-import { eq, and } from 'drizzle-orm'
+import crypto from 'crypto'
+import { eq, and, inArray } from 'drizzle-orm'
+import {ANONYMOUS_USER_ID} from '../constants.js'
 
 async function seed(){
     console.log('Seeding database...');
@@ -48,16 +50,26 @@ async function seedUser(){
         userStatus: "VALIDATED",
         aproId: 2
     };
+    const anonymousUser = {
+        userId: ANONYMOUS_USER_ID,
+        userName: "Anonyme",
+        userFirstname: "Anonyme",
+        userMail: "anonyme@anonyme.com",
+        userPass: await bcrypt.hash(crypto.randomUUID(), 12),
+        userStatus: "VALIDATED",
+        aproId: 3
+    };
     
     console.log("fixed user : ", fixedUser);
     console.log("password: 12345")
     users.push(fixedUser);
+    users.push(anonymousUser);
 
     await db.insert(tUser).values(users);
 }
 
 async function seedRole(){
-    const appRole = [{aproId: 1, aproLabel: "USER"}, {aproId: 2, aproLabel: "ADMIN"}];
+    const appRole = [{aproId: 1, aproLabel: "USER"}, {aproId: 2, aproLabel: "ADMIN"}, {aproId: 3, aproLabel: "ANONYMOUS"}];
     await db.insert(tAppRole).values(appRole);
 }
 
@@ -132,7 +144,6 @@ async function seedRevision() {
     const revisions = [];
     
     const users = await db.select().from(tUser);
-    const flashcards = await db.select().from(tFlashCard);
     const levels = await db.select().from(tLevel);
     
     const totoUser = users.find(u => u.userMail === 'toto@example.com');
@@ -145,12 +156,12 @@ async function seedRevision() {
         ));
     
     if (programmingColl.length > 0) {
-        const programmingCards = flashcards.filter(c => c.collId === programmingColl[0].collId);
+        const programmingCards = await db.select()
+            .from(tFlashCard)
+            .where(eq(tFlashCard.collId, programmingColl[0].collId));
+            
         const halfCount = Math.floor(programmingCards.length / 2);
         
-        console.log(`📚 Collection Programming de toto: ${programmingCards.length} cartes`);
-        console.log(`✅ ${halfCount} cartes à réviser (anciennes)`);
-        console.log(`❌ ${programmingCards.length - halfCount} cartes récentes (pas encore)`);
         
         for (let i = 0; i < halfCount; i++) {
             revisions.push({
@@ -170,31 +181,62 @@ async function seedRevision() {
             });
         }
     }
+    
     for (const user of users) {
-        if (user.userId === totoUser?.userId) continue;
+        const publicCollections = await db.select()
+            .from(tCollection)
+            .where(and(
+                eq(tCollection.collVisibility, 'PUBLIC'),
+            ));
         
-        const numRevisionsToCreate = faker.number.int({ 
-            min: Math.floor(flashcards.length * 0.3), 
-            max: Math.floor(flashcards.length * 0.7) 
-        });
+        const publicCollectionIds = publicCollections.map(c => c.collId);
+        let availableCards = [];
         
-        const selectedCards = faker.helpers.arrayElements(flashcards, numRevisionsToCreate);
+        if (publicCollectionIds.length > 0) {
+            availableCards = await db.select()
+                .from(tFlashCard)
+                .where(inArray(tFlashCard.collId, publicCollectionIds));
+        }
         
-        for (const card of selectedCards) {
-            const daysAgo = faker.number.int({ min: 0, max: 30 });
-            const level = faker.helpers.arrayElement(levels);
+        const ownCollections = await db.select()
+            .from(tCollection)
+            .where(eq(tCollection.userId, user.userId));
+        
+        const ownCollectionIds = ownCollections.map(c => c.collId);
+        
+        if (ownCollectionIds.length > 0) {
+            const ownCards = await db.select()
+                .from(tFlashCard)
+                .where(inArray(tFlashCard.collId, ownCollectionIds));
             
-            revisions.push({
-                reviLastDate: new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000),
-                userId: user.userId,
-                flcaId: card.flcaId,
-                leveId: level.leveId
+            availableCards = [...availableCards, ...ownCards];
+        }
+        
+        if (availableCards.length > 0) {
+            const numRevisionsToCreate = faker.number.int({ 
+                min: Math.floor(availableCards.length * 0.3), 
+                max: Math.floor(availableCards.length * 0.7) 
             });
+            
+            const selectedCards = faker.helpers.arrayElements(availableCards, numRevisionsToCreate);
+            
+            for (const card of selectedCards) {
+                const daysAgo = faker.number.int({ min: 0, max: 30 });
+                const level = faker.helpers.arrayElement(levels);
+                
+                revisions.push({
+                    reviLastDate: new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000),
+                    userId: user.userId,
+                    flcaId: card.flcaId,
+                    leveId: level.leveId
+                });
+            }
         }
     }
     
     await db.insert(tRevision).values(revisions);
 }
+
 
 
 
