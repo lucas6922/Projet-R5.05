@@ -13,28 +13,29 @@ import { sendVerificationEmail } from '../config/email.js';
  */
 export const registerUser = async (req, res) => {
     /* 
-    #swagger.tags = ['Auth']
-    #swagger.security = []
-    #swagger.description = 'Register a new user with email, last name, first name and password. A verification email is sent.'
-    #swagger.parameters['body'] = {
-      in: 'body',
-      description: 'Registration information',
-      required: true,
-      schema: { $ref: '#/definitions/RegisterRequest' }
-    }
-    #swagger.responses[201] = {
-      description: 'User created successfully',
-      schema: { $ref: '#/definitions/RegisterResponse' }
-    }
-    #swagger.responses[400] = {
-      description: 'Email already registered',
-      schema: { $ref: '#/definitions/Error' }
-    }
-    #swagger.responses[500] = {
-      description: 'Server error',
-      schema: { $ref: '#/definitions/Error' }
-    }
-  */
+        #swagger.tags = ['Auth']
+        #swagger.security = []
+        #swagger.summary = 'Register a user'
+        #swagger.description = 'Register a new user with email, last name, first name and password. A verification email is sent.'
+        #swagger.parameters['body'] = {
+        in: 'body',
+        description: 'Registration information',
+        required: true,
+        schema: { $ref: '#/definitions/RegisterRequest' }
+        }
+        #swagger.responses[201] = {
+        description: 'User created successfully',
+        schema: { $ref: '#/definitions/RegisterResponse' }
+        }
+        #swagger.responses[400] = {
+        description: 'Email already registered',
+        schema: { $ref: '#/definitions/Error' }
+        }
+        #swagger.responses[500] = {
+        description: 'Server error',
+        schema: { $ref: '#/definitions/Error' }
+        }
+    */
     try{
         const {userMail, userName, userFirstname, userPass, aproId} = req.body;
 
@@ -109,32 +110,33 @@ export const registerUser = async (req, res) => {
  */
 export const loginUser = async (req, res) => {
     /* 
-    #swagger.tags = ['Auth']
-    #swagger.security = []
-    #swagger.description = 'Authentication by email and password, returns a JWT. The user must have verified their email.'
-    #swagger.parameters['body'] = {
-      in: 'body',
-      description: 'Login credentials',
-      required: true,
-      schema: { $ref: '#/definitions/LoginRequest' }
-    }
-    #swagger.responses[200] = {
-      description: 'Successfully logged in',
-      schema: { $ref: '#/definitions/AuthResponse' }
-    }
-    #swagger.responses[403] = {
-      description: 'Email not verified',
-      schema: { $ref: '#/definitions/Error' }
-    }
-    #swagger.responses[404] = {
-      description: 'Invalid email or password',
-      schema: { $ref: '#/definitions/Error' }
-    }
-    #swagger.responses[500] = {
-      description: 'Server error',
-      schema: { $ref: '#/definitions/Error' }
-    }
-  */
+        #swagger.tags = ['Auth']
+        #swagger.security = []
+        #swagger.summary = 'Login a user'
+        #swagger.description = 'Authentication by email and password, returns a JWT. The user must have verified their email.'
+        #swagger.parameters['body'] = {
+        in: 'body',
+        description: 'Login credentials',
+        required: true,
+        schema: { $ref: '#/definitions/LoginRequest' }
+        }
+        #swagger.responses[200] = {
+        description: 'Successfully logged in',
+        schema: { $ref: '#/definitions/AuthResponse' }
+        }
+        #swagger.responses[403] = {
+        description: 'Email not verified',
+        schema: { $ref: '#/definitions/Error' }
+        }
+        #swagger.responses[404] = {
+        description: 'Invalid email or password',
+        schema: { $ref: '#/definitions/Error' }
+        }
+        #swagger.responses[500] = {
+        description: 'Server error',
+        schema: { $ref: '#/definitions/Error' }
+        }
+    */
     try{
         const {userMail, userPass} = req.body;
 
@@ -197,29 +199,40 @@ export const loginUser = async (req, res) => {
  * @param {response} res 
  */
 export const verifyEmail = async (req, res) => {
-    /* 
-    #swagger.tags = ['Auth']
-    #swagger.security = []
-    #swagger.description = 'User email verification via the token received by email'
-    #swagger.parameters['token'] = {
-      in: 'path',
-      description: 'JWT verification token received by email',
-      required: true,
-      type: 'string'
-    }
-    #swagger.responses[200] = {
-      description: 'Email verified successfully or already verified',
-      content: {'text/html': {} }
-    }
-    #swagger.responses[400] = {
-      description: 'User not found',
-      content: {'text/html': {} }
-    }
-    #swagger.responses[500] = {
-      description: 'Verification error (invalid or expired token)',
-      content: {'text/html': {} }
-    }
-  */
+    /*
+        #swagger.tags = ['Auth']
+        #swagger.security = []
+        #swagger.summary = 'Verify email'
+        #swagger.description = 'User email verification via the token received by email'
+        #swagger.produces = ['text/html']
+        #swagger.parameters['token'] = {
+            in: 'path',
+            description: 'JWT verification token received by email',
+            required: true,
+            type: 'string'
+        }
+        #swagger.responses[200] = {
+            description: 'Email verified successfully or already verified',
+            schema: { type: 'string' },
+            examples: {
+                'text/html': '<!DOCTYPE html><html><body><h1>Email verified succesfully</h1></body></html>'
+            }
+        }
+        #swagger.responses[400] = {
+            description: 'User not found',
+            schema: { type: 'string' },
+            examples: {
+                'text/html': '<!DOCTYPE html><html><body><h1>User not found</h1></body></html>'
+            }
+        }
+        #swagger.responses[500] = {
+            description: 'Verification error (invalid or expired token) or unexpected error',
+            schema: { type: 'string' },
+            examples: {
+                'text/html': '<!DOCTYPE html><html><body><h1>An unexpected error occurred</h1></body></html>'
+            }
+        }
+    */
     try{
         const { token } = req.params;
 

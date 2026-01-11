@@ -12,15 +12,16 @@ export const getUsers = async (req, res) =>{
         #swagger.tags = ['Administration']
         #swagger.summary = 'Get all users'
         #swagger.description = 'Returns a list of all users ordered by userId ascending.'
+        #swagger.security = [{ bearerAuth: [] }]
+
         #swagger.responses[200] = {
-        description: 'Users fetched successfully',
-        schema: {
-            type: 'array',
-            items: { $ref: '#/components/schemas/User' }
+            description: 'Users fetched successfully',
+            schema: [{ $ref: '#/definitions/User' }]
         }
-        }
+
         #swagger.responses[500] = {
-        description: 'Failed to fetch users'
+            description: 'Server error',
+            schema: { $ref: '#/definitions/Error' }
         }
     */
     try{
@@ -46,18 +47,29 @@ export const getUsers = async (req, res) =>{
 export const getUser = async (req, res) =>{
     /*
         #swagger.tags = ['Administration']
-        #swagger.summary = 'Get current user'
-        #swagger.description = 'Returns the authenticated user based on the token.'
+        #swagger.summary = 'Get a user by id'
+        #swagger.description = 'Returns a single user by userId.'
         #swagger.security = [{ bearerAuth: [] }]
-        #swagger.responses[200] = {
-        description: 'User fetched successfully',
-        schema: { $ref: '#/components/schemas/User' }
+        #swagger.parameters['userId'] = {
+            in: 'path',
+            description: 'User id',
+            required: true,
+            type: 'string'
         }
-        #swagger.responses[401] = {
-        description: 'Unauthorized'
+        #swagger.responses[200] = {
+            description: 'User fetched successfully',
+            schema: {
+                message: 'User retrieve successfully',
+                user: { $ref: '#/definitions/User' }
+            }
+        }
+        #swagger.responses[404] = {
+            description: 'User not found',
+            schema: { $ref: '#/definitions/Error' }
         }
         #swagger.responses[500] = {
-        description: 'Failed to fetch user'
+            description: 'Server error',
+            schema: { $ref: '#/definitions/Error' }
         }
     */
    const { userId } = req.params
