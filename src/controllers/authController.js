@@ -204,6 +204,7 @@ export const verifyEmail = async (req, res) => {
         #swagger.security = []
         #swagger.summary = 'Verify email'
         #swagger.description = 'User email verification via the token received by email'
+        #swagger.produces = ['text/html']
         #swagger.parameters['token'] = {
             in: 'path',
             description: 'JWT verification token received by email',
@@ -212,29 +213,23 @@ export const verifyEmail = async (req, res) => {
         }
         #swagger.responses[200] = {
             description: 'Email verified successfully or already verified',
-            content: {
-            "text/html": {
-                schema: { type: 'string' },
-                example: '<!DOCTYPE html><html><body><h1>Email verified succesfully</h1></body></html>'
-            }
+            schema: { type: 'string' },
+            examples: {
+                'text/html': '<!DOCTYPE html><html><body><h1>Email verified succesfully</h1></body></html>'
             }
         }
         #swagger.responses[400] = {
             description: 'User not found',
-            content: {
-            "text/html": {
-                schema: { type: 'string' },
-                example: '<!DOCTYPE html><html><body><h1>User not found</h1></body></html>'
-            }
+            schema: { type: 'string' },
+            examples: {
+                'text/html': '<!DOCTYPE html><html><body><h1>User not found</h1></body></html>'
             }
         }
         #swagger.responses[500] = {
             description: 'Verification error (invalid or expired token) or unexpected error',
-            content: {
-            "text/html": {
-                schema: { type: 'string' },
-                example: '<!DOCTYPE html><html><body><h1>An unexpected error occurred</h1></body></html>'
-            }
+            schema: { type: 'string' },
+            examples: {
+                'text/html': '<!DOCTYPE html><html><body><h1>An unexpected error occurred</h1></body></html>'
             }
         }
     */

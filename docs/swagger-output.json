@@ -875,6 +875,9 @@
         ],
         "summary": "Verify email",
         "description": "User email verification via the token received by email",
+        "produces": [
+          "text/html"
+        ],
         "parameters": [
           {
             "name": "token",
@@ -887,35 +890,56 @@
         "responses": {
           "200": {
             "description": "Email verified successfully or already verified",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                },
-                "example": "<!DOCTYPE html><html><body><h1>Email verified succesfully</h1></body></html>"
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              },
+              "xml": {
+                "name": "main"
               }
+            },
+            "examples": {
+              "text/html": "<!DOCTYPE html><html><body><h1>Email verified succesfully</h1></body></html>"
             }
           },
           "400": {
             "description": "User not found",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                },
-                "example": "<!DOCTYPE html><html><body><h1>User not found</h1></body></html>"
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              },
+              "xml": {
+                "name": "main"
               }
+            },
+            "examples": {
+              "text/html": "<!DOCTYPE html><html><body><h1>User not found</h1></body></html>"
             }
           },
           "500": {
             "description": "Verification error (invalid or expired token) or unexpected error",
-            "content": {
-              "text/html": {
-                "schema": {
-                  "type": "string"
-                },
-                "example": "<!DOCTYPE html><html><body><h1>An unexpected error occurred</h1></body></html>"
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              },
+              "xml": {
+                "name": "main"
               }
+            },
+            "examples": {
+              "text/html": "<!DOCTYPE html><html><body><h1>An unexpected error occurred</h1></body></html>"
             }
           }
         },
@@ -947,7 +971,7 @@
           "200": {
             "description": "Flashcard retrieved successfully",
             "schema": {
-              "$ref": "#/definitions/FlashcardDetail"
+              "$ref": "#/definitions/Flashcard"
             }
           },
           "400": {
@@ -1110,7 +1134,7 @@
     "/cards/{flcaId}/reviews": {
       "post": {
         "tags": [
-          "Flashcards"
+          "Revision"
         ],
         "summary": "Review a flashcard",
         "description": "Creates or updates a flashcard review for the authenticated user",

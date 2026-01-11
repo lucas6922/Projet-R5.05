@@ -25,7 +25,7 @@ export const getCard = async (req, res) =>{
         }
         #swagger.responses[200] = {
         description: 'Flashcard retrieved successfully',
-        schema: { $ref: '#/definitions/FlashcardDetail' }
+        schema: { $ref: '#/definitions/Flashcard' }
         }
         #swagger.responses[404] = {
         description: 'Flashcard not found or not accessible',
